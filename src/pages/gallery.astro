@@ -1,0 +1,143 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../layouts/PageLayout.astro';
+import GalleryGrid from '../components/GalleryGrid.astro';
+import type { GalleryItem } from '../components/GalleryGrid.astro';
+import Lightbox from '../components/Lightbox.astro';
+import { GALLERY_IMAGES, getGalleryThumb } from '../lib/images';
+
+/**
+ * Photos are discovered by globbing src/assets/gallery/, so dropping a new
+ * image in makes it appear on the next build. The matching Markdown file is an
+ * OPTIONAL sidecar that adds a caption, category and grid span — without it the
+ * photo still shows, with a generic alt.
+ */
+const meta = new Map((await getCollection('gallery')).map((e) => [e.id, e.data]));
+
+const items: GalleryItem[] = Object.entries(GALLERY_IMAGES)
+  .map(([id, image]) => {
+    const m = meta.get(id);
+    return {
+      id,
+      image,
+      thumb: getGalleryThumb(id) ?? image,
+      alt: m?.alt ?? 'Team CLOT-LESS payload build progress photograph.',
+      caption: m?.caption,
+      category: m?.category ?? 'prototype',
+      phase: m?.phase,
+      date: m?.date,
+      span: m?.span ?? '1x1',
+      order: m?.order ?? 999,
+    };
+  })
+  .sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
+
+const CATEGORIES = [
+  { id: 'all', label: 'All' },
+  { id: 'prototype', label: 'Prototype' },
+  { id: 'fluidics', label: 'Fluidics' },
+  { id: 'electronics', label: 'Electronics' },
+  { id: 'cad', label: 'CAD' },
+  { id: 'team', label: 'Team' },
+  { id: 'outreach', label: 'Outreach' },
+];
+
+// Only offer a filter for categories that actually have photos behind them.
+const present = new Set(items.map((i) => i.category));
+const categories = CATEGORIES.filter((c) => c.id === 'all' || present.has(c.id));
+
+// Sessions are distinct shoot dates. Counting distinct `phase` instead gives 1,
+// because every photo so far belongs to the same project phase.
+const sessionCount = new Set(
+  items.map((i) => i.date?.toISOString().slice(0, 10)).filter(Boolean),
+).size;
+---
+
+<PageLayout
+  eyebrow="Progress"
+  title="Building the payload"
+  lede="Bench builds, wiring harnesses and fit checks — the payload as it actually came together, photographed along the way."
+>
+  <section class="section section--tight">
+    <div class="shell">
+      <div class="gallery__bar" data-gallery-filter role="group" aria-label="Filter photos by category">
+        {categories.map((c) => (
+          <button
+            class:list={[c.id === 'all' && 'is-active']}
+            type="button"
+            data-category={c.id}
+            aria-pressed={c.id === 'all' ? 'true' : 'false'}
+          >
+            {c.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Live region so filtering isn't a silent change for screen readers —
+          the count is updated by initGalleryFilter. */}
+      <p class="t-caption gallery__count" data-gallery-count aria-live="polite">
+        {items.length} photograph{items.length === 1 ? '' : 's'} · {sessionCount} build
+        session{sessionCount === 1 ? '' : 's'}
+      </p>
+
+      <GalleryGrid items={items} />
+    </div>
+  </section>
+
+  <Lightbox />
+</PageLayout>
+
+<script>
+  import { initLightbox, initGalleryFilter } from '../scripts/lightbox';
+
+  const boot = () => {
+    initLightbox();
+    initGalleryFilter();
+  };
+
+  boot();
+  document.addEventListener('astro:after-swap', boot);
+</script>
+
+<style>
+  .gallery__bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-block-end: var(--space-4);
+  }
+
+  /* Filter buttons. Styled here rather than reusing GlassPill: these are real
+     <button>s with pressed state, and GlassPill is a static label. */
+  .gallery__bar button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.45rem 0.95rem;
+    font-size: var(--t-caption);
+    font-weight: 600;
+    border-radius: var(--r-pill);
+    color: var(--text-tertiary);
+    background-color: rgb(255 255 255 / 0.06);
+    box-shadow: inset 0 0 0 1px var(--border-hairline);
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      background-color var(--dur-fast) var(--ease-out);
+  }
+
+  .gallery__bar button.is-active {
+    color: var(--text-on-accent);
+    background-color: var(--accent);
+    box-shadow: none;
+  }
+
+  @media (hover: hover) {
+    .gallery__bar button:not(.is-active):hover {
+      color: var(--text-primary);
+      background-color: rgb(255 255 255 / 0.11);
+    }
+  }
+
+  .gallery__count {
+    margin-block-end: var(--space-6);
+  }
+</style>

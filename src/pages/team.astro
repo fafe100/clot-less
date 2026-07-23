@@ -1,0 +1,94 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import PageLayout from '../layouts/PageLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import TeamCard from '../components/TeamCard.astro';
+import GlassPanel from '../components/glass/GlassPanel.astro';
+import Reveal from '../components/Reveal.astro';
+import groupPhoto from '../assets/team/group-1.jpg';
+
+const all = (await getCollection('team')).sort((a, b) => a.data.order - b.data.order);
+
+const GROUPS = [
+  {
+    role: 'Mission Specialist' as const,
+    label: 'Mission Specialists',
+    blurb: 'Aboard the aircraft, operating the experiment through all twelve parabolas.',
+  },
+  {
+    role: 'Ground Crew' as const,
+    label: 'Ground Crew',
+    blurb: 'Preparation, documentation and outreach around each flight day.',
+  },
+  {
+    role: 'Principal Investigator' as const,
+    label: 'Principal Investigator',
+    blurb: 'Scientific and operational supervision.',
+  },
+];
+---
+
+<PageLayout
+  eyebrow="Crew"
+  title="Meet our team"
+  lede="A student-led team spanning two universities, three faculties and one anesthesiology department — medicine, engineering and pharmacy on the same problem."
+>
+  <section class="section section--tight">
+    <div class="shell">
+      <Reveal>
+        <GlassPanel class="team__hero" radius="2xl" elevation={3}>
+          <Image
+            src={groupPhoto}
+            alt="Four members of Team CLOT-LESS standing together outdoors at sunset, with the ocean and mountains behind them."
+            widths={[720, 1200, 2000]}
+            sizes="(width < 1180px) 92vw, 1100px"
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            class="team__hero-img"
+          />
+        </GlassPanel>
+      </Reveal>
+    </div>
+  </section>
+
+  {GROUPS.map((group) => {
+    const members = all.filter((m) => m.data.role === group.role);
+    if (members.length === 0) return null;
+    return (
+      <section class="section">
+        <div class="shell">
+          <SectionHeader
+            eyebrow={`${members.length} ${members.length === 1 ? "member" : "members"}`}
+            title={group.label}
+            lede={group.blurb}
+          />
+          <ul class="grid-auto" role="list" style="--col-min:260px">
+            {members.map((entry, i) => (
+              <Reveal as="li" index={i}>
+                <TeamCard entry={entry} />
+              </Reveal>
+            ))}
+          </ul>
+        </div>
+      </section>
+    );
+  })}
+</PageLayout>
+
+<style>
+  .team__hero {
+    overflow: hidden;
+    padding: var(--space-2);
+  }
+
+  .team__hero-img {
+    width: 100%;
+    height: auto;
+    max-height: 62svh;
+    object-fit: cover;
+    /* Nesting law: --r-2xl (44) − 8px padding = 36 ≈ --r-xl. */
+    border-radius: var(--r-xl);
+  }
+</style>

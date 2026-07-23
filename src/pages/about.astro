@@ -1,0 +1,303 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../layouts/PageLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import ObjectiveCard from '../components/ObjectiveCard.astro';
+import TimelineRail from '../components/TimelineRail.astro';
+import GlassPanel from '../components/glass/GlassPanel.astro';
+import GlassPill from '../components/glass/GlassPill.astro';
+import Reveal from '../components/Reveal.astro';
+
+const objectives = (await getCollection('objectives')).sort((a, b) => a.data.order - b.data.order);
+const timeline = (await getCollection('timeline')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<PageLayout
+  eyebrow="Mission"
+  title="Why thrombosis, why microgravity"
+  lede="Spaceflight makes dangerous blood clots more likely, and nobody has ever checked whether the treatment for them still works up there."
+>
+  <section class="section section--tight">
+    <div class="shell about__grid">
+      <Reveal class="prose about__prose">
+        <h2>The problem</h2>
+        <p>
+          Thrombosis is the formation of a blood clot inside a vessel. It is driven
+          by <strong>Virchow's triad</strong>: altered blood flow, injury to the
+          vessel lining, and a blood chemistry that clots too readily. Change any
+          one of the three and risk goes up.
+        </p>
+        <p>
+          Spaceflight changes the first. Without gravity pulling blood toward the
+          feet, fluid redistributes toward the head, venous blood velocity changes,
+          and flow in some vessels has been observed to reverse outright. Those are
+          precisely the conditions that raise the risk of a clinically significant
+          clot — deep vein thrombosis, and from there pulmonary embolism or cerebral
+          sinus thrombosis.
+        </p>
+
+        <h2>Why it matters more the further you go</h2>
+        <p>
+          In low Earth orbit, a serious medical event can be met with ground
+          expertise in real time and, in the worst case, a return. On a mission to
+          Mars neither is available. Communication delays run to tens of minutes
+          each way, the pharmacy is whatever was packed, and the crew has to act
+          alone.
+        </p>
+        <p>
+          That makes one question unavoidable: when an astronaut is given a
+          clot-dissolving drug in microgravity, does it work the way it does on
+          Earth? Right now, nobody knows — because
+          <strong>thrombolysis has never been tested in microgravity</strong>.
+          CLOT-LESS exists to produce that first measurement.
+        </p>
+      </Reveal>
+
+      <Reveal class="about__aside">
+        <GlassPanel class="about__quote" radius="xl">
+          <p class="about__quote-mark" aria-hidden="true">“</p>
+          <p class="about__quote-text">
+            This is the first study to investigate thrombolysis kinetics in vitro
+            within a reduced-gravity environment.
+          </p>
+          <p class="t-caption">Test Equipment Data Package, Rev B</p>
+        </GlassPanel>
+
+        <GlassPanel class="about__facts" radius="xl">
+          <dl>
+            <div><dt>Programme</dt><dd>CAN-RGX 2025–26</dd></div>
+            <div><dt>Agent</dt><dd>Tenecteplase (TNKase)</dd></div>
+            <div><dt>Model</dt><dd>Porcine blood clots, in vitro</dd></div>
+            <div><dt>Biosafety</dt><dd>Level 1 / Risk Group 1</dd></div>
+            <div><dt>Flight days</dt><dd>Two</dd></div>
+          </dl>
+        </GlassPanel>
+      </Reveal>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell">
+      <SectionHeader
+        eyebrow="Objectives"
+        title="Four questions this flight has to answer"
+        lede="Each objective traces from a science question down to the instrument that answers it, with the measurable criteria that decide whether it was met."
+      />
+      <ul class="grid-auto" role="list" style="--col-min:320px">
+        {objectives.map((entry, i) => (
+          <Reveal as="li" index={i}>
+            <ObjectiveCard entry={entry} />
+          </Reveal>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell">
+      <SectionHeader
+        eyebrow="Programme"
+        title="Where the project stands"
+        lede="Seven phases from procurement through to knowledge translation."
+      />
+      <TimelineRail entries={timeline} />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell">
+      <SectionHeader
+        eyebrow="Outreach"
+        title="Beyond the flight"
+        lede="Objective four is not decoration. A result that stays inside the team does not advance the field."
+      />
+
+      <div class="about__outreach">
+        <Reveal>
+          <GlassPanel class="about__panel" radius="xl">
+            <GlassPill tone="accent">Accepted</GlassPill>
+            <h3 class="t-h3">77th International Astronautical Congress</h3>
+            <p class="about__panel-body">
+              <em>Thrombolytic Pharmacodynamics in Microgravity: Implications for
+              Autonomous Medical Care in Deep Space</em> — an oral presentation of
+              the experimental design and the case for the research. Results will
+              follow in future papers once flight data has been compiled.
+            </p>
+            <dl class="about__paper">
+              <div><dt>Paper</dt><dd class="t-mono">IAC-26,A1,3,9,x113307</dd></div>
+              <div><dt>Session</dt><dd>6 October 2026, 16:20 · Hall 7</dd></div>
+              <div><dt>Location</dt><dd>Türkiye</dd></div>
+            </dl>
+          </GlassPanel>
+        </Reveal>
+
+        <Reveal index={1}>
+          <GlassPanel class="about__panel" radius="xl">
+            <GlassPill>In development</GlassPill>
+            <h3 class="t-h3">Three STEM modules</h3>
+            <p class="about__panel-body">
+              Built for elementary (Grade 7) and high school (Grades 10–12)
+              audiences, targeting six to eight classroom sessions.
+            </p>
+            <ul class="about__modules" role="list">
+              <li>
+                <strong>Zero Gravity and the Human Body</strong>
+                <span>What weightlessness does to bone, muscle, balance and circulation.</span>
+              </li>
+              <li>
+                <strong>Medicine in Microgravity</strong>
+                <span>Why drug delivery, wound healing, surgery and imaging all get harder without gravity.</span>
+              </li>
+              <li>
+                <strong>Our CAN-RGX Journey</strong>
+                <span>What a student-led research project actually looks like — including the parts that go wrong.</span>
+              </li>
+            </ul>
+          </GlassPanel>
+        </Reveal>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .about__grid {
+    display: grid;
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  .about__aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  @media (width >= 940px) {
+    .about__grid {
+      grid-template-columns: 1.35fr 1fr;
+      gap: var(--space-10);
+    }
+  }
+
+  .about__quote {
+    padding: var(--space-6) var(--space-6) calc(var(--space-6) + 4px);
+  }
+
+  .about__quote-mark {
+    font-size: 3rem;
+    line-height: 0.6;
+    color: var(--accent-ring);
+  }
+
+  .about__quote-text {
+    margin-block: var(--space-4) var(--space-4);
+    font-size: var(--t-lede);
+    line-height: 1.45;
+    letter-spacing: -0.012em;
+    color: var(--text-primary);
+  }
+
+  .about__facts {
+    padding: var(--space-5) var(--space-5) calc(var(--space-5) + 4px);
+  }
+
+  .about__facts dl,
+  .about__paper {
+    margin: 0;
+  }
+
+  .about__facts div,
+  .about__paper div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-block: var(--space-3);
+    border-block-end: 1px solid var(--border-hairline);
+  }
+
+  .about__facts div:last-child,
+  .about__paper div:last-child {
+    border-block-end: none;
+    padding-block-end: 0;
+  }
+
+  .about__facts dt,
+  .about__paper dt {
+    font-size: var(--t-caption);
+    color: var(--text-tertiary);
+  }
+
+  .about__facts dd,
+  .about__paper dd {
+    margin: 0;
+    font-size: var(--t-caption);
+    font-weight: 600;
+    text-align: end;
+    color: var(--text-primary);
+  }
+
+  .about__outreach {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (width >= 880px) {
+    .about__outreach {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .about__panel {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: var(--space-4);
+    height: 100%;
+    padding: var(--space-6) var(--space-6) calc(var(--space-6) + 4px);
+  }
+
+  .about__panel-body {
+    font-size: var(--t-small);
+    line-height: 1.65;
+  }
+
+  .about__panel-body em {
+    color: var(--text-primary);
+  }
+
+  .about__paper {
+    width: 100%;
+    margin-block-start: auto;
+    padding-block-start: var(--space-3);
+    border-block-start: 1px solid var(--border-hairline);
+  }
+
+  .about__modules {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+    margin: 0;
+    padding: var(--space-4) 0 0;
+    border-block-start: 1px solid var(--border-hairline);
+    list-style: none;
+  }
+
+  .about__modules li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .about__modules strong {
+    font-size: var(--t-small);
+    color: var(--text-primary);
+  }
+
+  .about__modules span {
+    font-size: var(--t-caption);
+    line-height: 1.5;
+    color: var(--text-tertiary);
+  }
+</style>

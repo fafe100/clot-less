@@ -1,0 +1,394 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Emblem from '../components/Emblem.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import StatTile from '../components/StatTile.astro';
+import ObjectiveCard from '../components/ObjectiveCard.astro';
+import TeamCard from '../components/TeamCard.astro';
+import GlassPanel from '../components/glass/GlassPanel.astro';
+import Reveal from '../components/Reveal.astro';
+import { site, homeStats } from '../data/site';
+import { link } from '../lib/link';
+import { getSponsorLogo } from '../lib/images';
+import { Image } from 'astro:assets';
+
+const objectives = (await getCollection('objectives')).sort((a, b) => a.data.order - b.data.order);
+const team = (await getCollection('team'))
+  .filter((m) => m.data.featured)
+  .sort((a, b) => a.data.order - b.data.order);
+const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+---
+
+<BaseLayout title={site.name} aurora="hero">
+  <section class="hero">
+    <div class="shell hero__inner">
+      <div class="hero__emblem enter" style="--enter-delay:80ms">
+        <Emblem size={330} glow float priority />
+      </div>
+
+      <div class="hero__copy">
+        <p class="t-eyebrow enter" style="--enter-delay:220ms">
+          {site.campaign} · Canadian Space Agency
+        </p>
+
+        <h1 class="t-display hero__title enter" style="--enter-delay:300ms">
+          {site.experiment}
+        </h1>
+
+        <p class="t-lede hero__lede enter" style="--enter-delay:380ms">
+          {site.tagline} Team CLOT-LESS is flying the first in-vitro study of clot
+          dissolution in reduced gravity — because on a mission to Mars, nobody is
+          coming to help.
+        </p>
+
+        <div class="hero__actions enter" style="--enter-delay:460ms">
+          <a class="btn btn--primary" href={link('/design')}>Explore the design</a>
+          <a class="btn btn--ghost" href={link('/about')}>Our mission</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--partners">
+    <div class="shell">
+      <SectionHeader
+        eyebrow="Support"
+        title="Partners and sponsors"
+        align="center"
+      />
+      {/* `enter` rather than `Reveal`: this sits above the fold, so it must be
+          painted on load. A scroll-reveal would leave it invisible until an
+          IntersectionObserver fired, which is exactly the wrong behaviour for
+          content the visitor can already see. */}
+      <div class="enter" style="--enter-delay:540ms">
+        <GlassPanel class="sponsor-rail" radius="2xl">
+          <ul role="list">
+            {sponsors.map((entry) => {
+              const logo = getSponsorLogo(entry.id);
+              return logo ? (
+                <li>
+                  <Image
+                    src={logo}
+                    alt={`${entry.data.name} logo`}
+                    width={280}
+                    height={130}
+                    densities={[1, 2]}
+                    loading="eager"
+                    decoding="async"
+                  />
+                </li>
+              ) : null;
+            })}
+          </ul>
+        </GlassPanel>
+      </div>
+      <p class="section__more center">
+        <a href={link('/partners')}>What each partner contributed →</a>
+      </p>
+    </div>
+  </section>
+
+  {/* The mission in one paragraph. Restraint here is the point — this is the
+      one idea a visitor should leave with. */}
+  <section class="section">
+    <div class="shell">
+      <Reveal>
+        <p class="t-lede statement">
+          Astronauts are at measurable risk of dangerous blood clots. We know how to
+          dissolve a clot on Earth. Nobody has ever tested whether that treatment
+          still works when gravity is taken away — and on a deep-space mission,
+          with communication delays measured in minutes, a crew has to handle that
+          alone. CLOT-LESS is built to close that gap.
+        </p>
+      </Reveal>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="shell">
+      <ul class="stat-rail grid-auto" role="list" style="--col-min:200px">
+        {homeStats.map((s, i) => (
+          <Reveal as="li" index={i}>
+            <StatTile {...s} />
+          </Reveal>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell">
+      <SectionHeader
+        eyebrow="Mission objectives"
+        title="Four questions this flight has to answer"
+        lede="Each objective carries its own measurable success criteria, traced from the science question down to the instrument that answers it."
+      />
+      <ul class="grid-auto" role="list" style="--col-min:250px">
+        {objectives.map((entry, i) => (
+          <Reveal as="li" index={i}>
+            <ObjectiveCard entry={entry} compact />
+          </Reveal>
+        ))}
+      </ul>
+      <p class="section__more">
+        <a href={link('/about')}>Read the full mission brief →</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell">
+      <SectionHeader
+        eyebrow="The crew"
+        title="Medicine, Pharmacy, Engineering"
+        lede="A student-led team spanning two universities and three faculties."
+      />
+    </div>
+    <ul class="team-strip" role="list" tabindex="0" aria-label="Featured team members, scrollable">
+      {team.map((entry) => (
+        <li><TeamCard entry={entry} compact /></li>
+      ))}
+    </ul>
+    <div class="shell">
+      <p class="section__more">
+        <a href={link('/team')}>Meet the whole team →</a>
+      </p>
+    </div>
+  </section>
+
+</BaseLayout>
+
+<style>
+  /* Deliberately NOT 100svh. A full-viewport hero guarantees that whatever
+     follows starts below the fold; the partners rail is meant to be visible
+     without scrolling, so the height is content-driven instead. */
+  .hero {
+    position: relative;
+    /* Matches .section so the grain overlay sits behind the hero exactly as it
+       does behind every other section, instead of only textur[is]ing this one. */
+    z-index: var(--z-content);
+    display: grid;
+    place-items: center;
+    padding-block: calc(var(--nav-h) + var(--space-6)) var(--space-6);
+    text-align: center;
+  }
+
+  .hero__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .hero__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .hero__emblem {
+    margin-block-end: var(--space-2);
+  }
+
+  .hero__title {
+    max-width: 18ch;
+  }
+
+  .hero__lede {
+    max-width: 56ch;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+    margin-block-start: var(--space-3);
+  }
+
+  /* Side-by-side above the breakpoint. A centred stack pushes the primary
+     actions below the fold on a 720px-tall laptop; this keeps the whole hero
+     — emblem, headline and both CTAs — visible on first paint. */
+  @media (width >= 900px) {
+    .hero {
+      text-align: start;
+    }
+
+    .hero__inner {
+      flex-direction: row;
+      align-items: center;
+      gap: clamp(var(--space-6), 4vw, var(--space-10));
+    }
+
+    .hero__emblem {
+      flex: 0 0 auto;
+      margin-block-end: 0;
+    }
+
+    .hero__copy {
+      align-items: start;
+      gap: var(--space-4);
+    }
+
+    .hero__title {
+      max-width: 15ch;
+      font-size: clamp(2.5rem, 1.2rem + 3.4vw, 4.25rem);
+    }
+
+    .hero__lede {
+      max-width: 46ch;
+    }
+
+    .hero__actions {
+      justify-content: start;
+      margin-block-start: var(--space-2);
+    }
+  }
+
+  .statement {
+    max-width: 62ch;
+    margin-inline: auto;
+    font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+    line-height: 1.45;
+    letter-spacing: -0.016em;
+    color: var(--text-primary);
+    text-align: center;
+    text-wrap: pretty;
+  }
+
+  .stat-rail {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .section__more {
+    margin-block-start: var(--space-6);
+    font-size: var(--t-small);
+    font-weight: 600;
+  }
+
+  .section__more a {
+    text-decoration: none;
+  }
+
+  /* Horizontal scroll-snap rail. Edge-to-edge on purpose so it reads as a
+     surface that continues past the viewport. */
+  .team-strip {
+    display: flex;
+    gap: var(--space-4);
+    margin: 0;
+    padding: var(--space-2) var(--gutter) var(--space-5);
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-soft) transparent;
+  }
+
+  .team-strip > li {
+    flex: 0 0 260px;
+    scroll-snap-align: start;
+  }
+
+  /* `safe` matters here. Plain `center` on an overflowing scroll container
+     pushes the excess out of BOTH ends, and the start-edge overflow is not
+     scrollable — the first card gets clipped and is unreachable at common
+     laptop widths. `safe center` falls back to start-alignment the moment the
+     content overflows, and browsers without support ignore it entirely, which
+     is the same safe outcome. */
+  @media (width >= 1180px) {
+    .team-strip {
+      justify-content: safe center;
+      padding-inline: var(--gutter);
+    }
+  }
+
+  /* Horizontal padding tightens on narrower screens so the row holds together
+     for as long as possible before it has to wrap. */
+  /* Short laptop screens (1366x768, 1280x800). The emblem is the single
+     biggest consumer of vertical space, so it gives up the most; paddings
+     tighten alongside it. Without this the logo rail clips at the fold on
+     exactly the screens most likely to be plugged into a projector.
+
+     !important is required because Emblem sets --emblem-size inline from its
+     `size` prop, and an inline custom property otherwise wins. */
+  @media (height <= 840px) {
+    .hero {
+      padding-block: calc(var(--nav-h) + var(--space-3)) var(--space-3);
+    }
+
+    .hero__emblem :global(.emblem) {
+      --emblem-size: 250px !important;
+    }
+
+    .hero__copy {
+      gap: var(--space-3);
+    }
+
+    .section--partners {
+      padding-block: var(--space-3) var(--space-6);
+    }
+
+    .section--partners :global(.sec-head) {
+      margin-block-end: var(--space-4);
+    }
+  }
+
+  /* Sits immediately under the hero, so it runs tighter than a standalone
+     section would. */
+  .section--partners {
+    padding-block: var(--space-5) var(--space-8);
+  }
+
+  .section--partners :global(.sec-head) {
+    margin-block-end: var(--space-5);
+  }
+
+  .sponsor-rail {
+    padding: var(--space-6) clamp(var(--space-4), 3vw, var(--space-6));
+  }
+
+  /* Sized so all seven marks sit on one row down to ~1000px. The measured
+     widths total ~600px, so a 2rem column gap leaves comfortable slack —
+     including room for another partner or two before it wraps. Still wraps
+     gracefully below that; it is a flex row, not a fixed grid. */
+  .sponsor-rail ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-5) var(--space-6);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Logos on the dark field are dark artwork, so they get inverted to a flat
+     light monochrome here rather than sitting on a plate — the partners page
+     shows each one full-colour on its own plate. */
+  /* Sizes track the viewport so the row survives down to tablet widths instead
+     of orphaning the last logo onto a line of its own. Both axes are capped:
+     wide marks (CAN-RGX, SENSIRION) are width-bound, square ones (CSA, Royal
+     Columbian) are height-bound, which keeps them optically even. */
+  .sponsor-rail img {
+    width: auto;
+    max-width: clamp(84px, 9.5vw, 132px);
+    max-height: clamp(28px, 3.2vw, 44px);
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+    opacity: 0.5;
+    transition: opacity var(--dur-fast) var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .sponsor-rail li:hover img {
+      opacity: 0.92;
+    }
+  }
+</style>
