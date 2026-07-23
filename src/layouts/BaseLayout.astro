@@ -1,0 +1,150 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import { site } from '../data/site';
+import { link } from '../lib/link';
+import Aurora from '../components/Aurora.astro';
+import GrainOverlay from '../components/GrainOverlay.astro';
+import NavBar from '../components/nav/NavBar.astro';
+import MobileMenu from '../components/nav/MobileMenu.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  aurora?: 'hero' | 'page';
+}
+
+const { title, description = site.description, aurora = 'page' } = Astro.props;
+const fullTitle = title === site.name ? `${site.name} — ${site.experiment}` : `${title} · ${site.name}`;
+
+/* Absolute URLs, required by Open Graph — relative paths are ignored by most
+   unfurlers. Both resolve against `site` in astro.config.mjs, so pointing the
+   project at a different domain updates every page at once. */
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL('/og-card.png', Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#0A143C" />
+    <link rel="icon" href={link('/favicon.svg')} type="image/svg+xml" />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.team} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Team CLOT-LESS mission patch beside the experiment title: A Quantitative Analysis of Thrombolysis Kinetics in Microgravity." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <ClientRouter />
+
+    {/*
+      Runs before first paint. Two jobs:
+
+      1. Apply the stored reduce-transparency preference so the glass never
+         flashes translucent before switching to opaque.
+
+      2. Add .js-reveal, which gates the reveal animation's hidden state, AND
+         arm a failsafe that strips it again if the reveal module never runs.
+
+         The failsafe is the important part. "JS disabled" is the easy case —
+         this script never runs, the class never lands, everything is visible.
+         The dangerous case is this inline script succeeding while the module
+         bundle does not: a partial deploy, a blocked request, or a throw in
+         any earlier init. Without the timeout, .js-reveal would survive with
+         nothing left to clear it and every page would sit at opacity 0
+         forever. reveal.ts cancels the timer as soon as it takes over.
+    */}
+    <script is:inline>
+      (() => {
+        try {
+          if (localStorage.getItem('clotless:transparency') === 'reduce') {
+            document.documentElement.dataset.transparency = 'reduce';
+          }
+        } catch (_) {}
+
+        const root = document.documentElement;
+        root.classList.add('js-reveal');
+        window.__revealFailsafe = setTimeout(() => {
+          root.classList.remove('js-reveal');
+        }, 2000);
+      })();
+    </script>
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <Aurora intensity={aurora} />
+    <GrainOverlay />
+
+    {/*
+      Deliberately NOT transition:persist. The nav's active state is per-page —
+      persisting the old element across a swap would freeze `is-current` and
+      `aria-current="page"` on whichever page you first landed on, telling
+      screen readers the wrong thing. It is cheap to re-render.
+    */}
+    <NavBar />
+    <MobileMenu />
+
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+
+    <Footer />
+
+    <script>
+      import { initNav } from '../scripts/nav';
+      import { initReveal } from '../scripts/reveal';
+      import { initTransparencyToggle } from '../scripts/transparency';
+
+      const boot = () => {
+        initNav();
+        initReveal();
+        initTransparencyToggle();
+      };
+
+      boot();
+      // View transitions swap the DOM without a reload, so re-bind each time.
+      document.addEventListener('astro:after-swap', boot);
+    </script>
+
+    <style is:global>
+      /* Cross-fade + rise on navigation — the single biggest contributor to the
+         site feeling like an app rather than a sequence of documents.
+         No @view-transition rule here: that is the cross-document API, and
+         <ClientRouter /> intercepts navigation to use the same-document one.
+         Reduced motion is handled by Astro's own viewtransitions.css, which
+         already sets `animation: none !important` on these pseudo-elements. */
+      ::view-transition-old(root) {
+        animation: vt-out var(--dur-fast) var(--ease-out) both;
+      }
+
+      ::view-transition-new(root) {
+        animation: vt-in var(--dur-base) var(--ease-decel) both;
+      }
+
+      @keyframes vt-out {
+        to { opacity: 0; transform: translateY(-6px); }
+      }
+
+      @keyframes vt-in {
+        from { opacity: 0; transform: translateY(8px); }
+      }
+    </style>
+  </body>
+</html>

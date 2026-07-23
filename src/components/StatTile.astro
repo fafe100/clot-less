@@ -1,0 +1,45 @@
+---
+import GlassPanel from './glass/GlassPanel.astro';
+
+interface Props {
+  value: string;
+  label: string;
+  detail?: string;
+}
+
+const { value, label, detail } = Astro.props;
+---
+
+<GlassPanel class="stat" radius="md" elevation={1}>
+  <p class="stat__value t-num">{value}</p>
+  <p class="stat__label">{label}</p>
+  {detail && <p class="stat__detail t-num">{detail}</p>}
+</GlassPanel>
+
+<style>
+  .stat {
+    /* Asymmetric padding: the specular top edge visually crowds the first line. */
+    padding: var(--space-5) var(--space-5) calc(var(--space-5) + 4px);
+  }
+
+  .stat__value {
+    font-size: clamp(1.75rem, 1.4rem + 1vw, 2.25rem);
+    font-weight: 700;
+    letter-spacing: -0.028em;
+    line-height: 1.05;
+    color: var(--text-primary);
+  }
+
+  .stat__label {
+    margin-block-start: var(--space-2);
+    font-size: var(--t-small);
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .stat__detail {
+    margin-block-start: var(--space-1);
+    font-size: var(--t-caption);
+    color: var(--text-tertiary);
+  }
+</style>

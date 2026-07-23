@@ -1,0 +1,202 @@
+---
+import { nav, site } from '../../data/site';
+import { link, isCurrent } from '../../lib/link';
+
+const pathname = Astro.url.pathname;
+---
+
+{/* IntersectionObserver target. Cheaper than any scroll listener. */}
+<div data-nav-sentinel aria-hidden="true"></div>
+
+<header class="nav" data-nav>
+  <nav class="nav__pill glass glass--blur glass--r-pill" aria-label="Primary">
+    <a class="nav__brand" href={link('/')}>
+      <span class="nav__mark" aria-hidden="true"></span>
+      <span class="nav__wordmark">{site.name}</span>
+    </a>
+
+    <ul class="nav__links" role="list">
+      {nav.map((item) => {
+        const current = isCurrent(link(item.href), pathname);
+        return (
+          <li>
+            <a
+              class:list={['nav__link', current && 'is-current']}
+              href={link(item.href)}
+              aria-current={current ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+
+    <button
+      class="nav__toggle"
+      type="button"
+      data-menu-toggle
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <span class="visually-hidden">Menu</span>
+      <span class="nav__burger" aria-hidden="true"></span>
+    </button>
+  </nav>
+</header>
+
+<style>
+  .nav {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline: 0;
+    z-index: var(--z-nav);
+    display: flex;
+    justify-content: center;
+    padding: var(--space-3) var(--gutter);
+    pointer-events: none;
+  }
+
+  /* A centred pill, not a full-bleed bar. Less blurred area to resample every
+     frame, and it reads much more like Control Center. */
+  .nav__pill {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    width: 100%;
+    max-width: 880px;
+    height: 56px;
+    padding-inline: var(--space-5);
+    /* Confines repaints to the pill — critical next to backdrop-filter. */
+    contain: paint;
+    transition:
+      background-color var(--dur-base) var(--ease-out),
+      box-shadow var(--dur-base) var(--ease-out),
+      height var(--dur-base) var(--ease-out);
+  }
+
+  /* Never transition backdrop-filter itself — it forces a re-resample every
+     frame of the transition. Step it at the class change instead. */
+  .nav.is-scrolled .nav__pill {
+    height: 50px;
+    background-color: var(--glass-fill);
+  }
+
+  .nav__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 0.9375rem;
+    letter-spacing: -0.01em;
+    margin-inline-end: auto;
+  }
+
+  .nav__mark {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background-color: var(--signal);
+    box-shadow: 0 0 12px var(--signal-glow);
+    flex-shrink: 0;
+  }
+
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav__link {
+    position: relative;
+    display: block;
+    padding: 0.45rem 0.8rem;
+    font-size: var(--t-caption);
+    font-weight: 500;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    border-radius: var(--r-pill);
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      background-color var(--dur-fast) var(--ease-out);
+  }
+
+  @media (hover: hover) {
+    .nav__link:hover {
+      color: var(--text-primary);
+      background-color: rgb(255 255 255 / 0.07);
+    }
+  }
+
+  .nav__link.is-current {
+    color: var(--text-primary);
+  }
+
+  /* The active indicator slides between items via the view transition. */
+  .nav__link.is-current::after {
+    content: '';
+    position: absolute;
+    inset-block-end: 1px;
+    inset-inline: 50%;
+    width: 4px;
+    height: 4px;
+    margin-inline-start: -2px;
+    border-radius: 50%;
+    background-color: var(--signal);
+    view-transition-name: nav-indicator;
+  }
+
+  .nav__toggle {
+    display: none;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    margin-inline-end: calc(var(--space-3) * -1);
+    border-radius: 50%;
+  }
+
+  .nav__burger,
+  .nav__burger::before,
+  .nav__burger::after {
+    display: block;
+    width: 17px;
+    height: 1.5px;
+    border-radius: 2px;
+    background-color: var(--text-primary);
+    transition: transform var(--dur-fast) var(--ease-out);
+  }
+
+  .nav__burger::before,
+  .nav__burger::after {
+    content: '';
+    position: absolute;
+  }
+
+  .nav__burger::before { transform: translateY(-5.5px); }
+  .nav__burger::after { transform: translateY(5.5px); }
+
+  [aria-expanded='true'] .nav__burger { background-color: transparent; }
+  [aria-expanded='true'] .nav__burger::before { transform: rotate(45deg); }
+  [aria-expanded='true'] .nav__burger::after { transform: rotate(-45deg); }
+
+  @media (width < 860px) {
+    .nav__links { display: none; }
+    .nav__toggle { display: grid; }
+  }
+
+  /* iOS Safari repaints a fixed blurred element on every scroll frame. On
+     touch devices drop the real blur entirely and use the opaque fill — this
+     is the single most important performance mitigation on the site. */
+  @media (hover: none) and (pointer: coarse) {
+    .nav__pill {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      background-color: var(--glass-fill-solid);
+    }
+  }
+</style>

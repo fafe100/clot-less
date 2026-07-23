@@ -1,0 +1,138 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import GlassPanel from './glass/GlassPanel.astro';
+
+interface Props {
+  entry: CollectionEntry<'objectives'>;
+  compact?: boolean;
+}
+
+const { entry, compact = false } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+
+const ICONS = {
+  measure: 'M3 17l4-6 3.5 4L14 8l4 9',
+  flow: 'M3 12h5m0 0a3 3 0 106 0 3 3 0 10-6 0m6 0h5',
+  reliability: 'M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z',
+  outreach: 'M4 10h3l6-4v12l-6-4H4zM17 8a5 5 0 010 8',
+} as const;
+---
+
+<GlassPanel as="article" class:list={['obj', compact && 'obj--compact']} radius="xl" interactive>
+  <div class="obj__top">
+    <span class="obj__num t-num" aria-hidden="true">{String(data.number).padStart(2, '0')}</span>
+    <span class="obj__icon" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
+        <path d={ICONS[data.icon]} stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
+  </div>
+
+  <h3 class="t-h3 obj__title">{data.title}</h3>
+  <p class="obj__summary">{data.summary}</p>
+
+  {!compact && (
+    <>
+      <div class="prose obj__detail"><Content /></div>
+      {data.metrics.length > 0 && (
+        <dl class="obj__metrics">
+          {data.metrics.map((m) => (
+            <div class="obj__metric">
+              <dt>{m.label}</dt>
+              <dd class="t-num">{m.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+    </>
+  )}
+</GlassPanel>
+
+<style>
+  .obj {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: var(--space-3);
+    padding: var(--space-6) var(--space-6) calc(var(--space-6) + 4px);
+    height: 100%;
+  }
+
+  .obj__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-block-end: var(--space-2);
+  }
+
+  .obj__num {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: var(--text-tertiary);
+  }
+
+  .obj__icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: var(--r-sm);
+    color: var(--accent);
+    background-color: var(--accent-muted);
+    box-shadow: inset 0 0 0 1px var(--accent-ring);
+  }
+
+  .obj__title {
+    letter-spacing: -0.018em;
+  }
+
+  .obj__summary {
+    font-size: var(--t-small);
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+
+  .obj__detail {
+    font-size: var(--t-small);
+    line-height: 1.6;
+    color: var(--text-tertiary);
+  }
+
+  .obj__metrics {
+    display: grid;
+    gap: var(--space-3);
+    width: 100%;
+    margin: auto 0 0;
+    padding-block-start: var(--space-4);
+    border-block-start: 1px solid var(--border-hairline);
+  }
+
+  .obj__metric {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .obj__metric dt {
+    font-size: var(--t-caption);
+    color: var(--text-tertiary);
+  }
+
+  .obj__metric dd {
+    margin: 0;
+    font-size: var(--t-caption);
+    font-weight: 600;
+    text-align: end;
+    color: var(--text-primary);
+  }
+
+  .obj--compact {
+    padding: var(--space-5);
+  }
+</style>

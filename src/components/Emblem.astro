@@ -1,0 +1,74 @@
+---
+import { Image } from 'astro:assets';
+import emblem from '../assets/brand/emblem.png';
+
+/**
+ * The mission patch. Raster only — the source is a 1000×1000 transparent PNG
+ * and the PSD/PDF originals are stacked JPEG layers, so there is no vector to
+ * extract. Never upscale past 1000px.
+ */
+interface Props {
+  size?: number;
+  glow?: boolean;
+  float?: boolean;
+  priority?: boolean;
+}
+
+const { size = 320, glow = false, float = false, priority = false } = Astro.props;
+---
+
+<div
+  class:list={['emblem', glow && 'emblem--glow']}
+  style={`--emblem-size:${size}px`}
+>
+  {glow && <div class="emblem__glow" aria-hidden="true"></div>}
+  {/* width is the CSS size and densities adds the 2x candidate. Passing size*2
+      as the width too would double-count DPR and emit a 4x candidate upscaled
+      past the 1000px source — softer AND heavier, on the LCP image. */}
+  <Image
+    src={emblem}
+    alt="Team CLOT-LESS mission patch: a red blood vessel containing a fibrin clot, crossing a deep navy roundel marked University of British Columbia and CLOT-LESS, with a white maple leaf and stars."
+    width={size}
+    height={size}
+    densities={[1, 2]}
+    loading={priority ? 'eager' : 'lazy'}
+    fetchpriority={priority ? 'high' : 'auto'}
+    decoding={priority ? 'sync' : 'async'}
+    class:list={['emblem__art', float && 'emblem__art--float']}
+  />
+</div>
+
+<style>
+  .emblem {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: var(--emblem-size);
+    height: var(--emblem-size);
+  }
+
+  .emblem__art {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: auto;
+    /* Grounds the patch against the field so it doesn't look pasted on. */
+    filter: drop-shadow(0 18px 44px rgb(0 6 20 / 0.65));
+  }
+
+  .emblem__art--float {
+    animation: emblem-float 6s var(--ease-in-out) infinite alternate;
+  }
+
+  /* Counter-phased against the float — 8s vs 6s means the two never sync,
+     which is what stops it reading as a mechanical loop. */
+  .emblem__glow {
+    position: absolute;
+    inset: -18%;
+    z-index: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, var(--signal-glow) 0%, transparent 62%);
+    filter: blur(28px);
+    animation: emblem-glow 8s var(--ease-in-out) infinite alternate;
+  }
+</style>

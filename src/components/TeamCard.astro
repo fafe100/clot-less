@@ -1,0 +1,165 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import GlassPanel from './glass/GlassPanel.astro';
+import GlassPill from './glass/GlassPill.astro';
+import Monogram from './Monogram.astro';
+import { getTeamPhoto } from '../lib/images';
+
+interface Props {
+  entry: CollectionEntry<'team'>;
+  compact?: boolean;
+}
+
+const { entry, compact = false } = Astro.props;
+const { data } = entry;
+
+// Bound by filename: src/content/team/<id>.md ←→ src/assets/team/<id>.jpg
+const photo = getTeamPhoto(entry.id);
+const { Content } = await render(entry);
+---
+
+<GlassPanel as="article" class:list={['member', compact && 'member--compact']} radius="xl" interactive>
+  <div class="member__portrait">
+    {photo ? (
+      <Image
+        src={photo}
+        alt={`${data.name}, ${data.role} on Team CLOT-LESS`}
+        width={520}
+        height={650}
+        widths={[260, 520]}
+        sizes="(width < 640px) 90vw, 300px"
+        loading="lazy"
+        decoding="async"
+        class="member__photo"
+      />
+    ) : (
+      <Monogram name={data.name} />
+    )}
+  </div>
+
+  <div class="member__body">
+    <div class="member__head">
+      <h3 class="t-h3 member__name">{data.name}</h3>
+      <p class="member__creds">{data.credentials}</p>
+    </div>
+
+    <GlassPill tone={data.role === 'Principal Investigator' ? 'accent' : 'neutral'}>
+      {data.role}
+    </GlassPill>
+
+    <p class="member__position">{data.position}</p>
+    <p class="t-caption">{data.affiliation}</p>
+
+    {!compact && (
+      <>
+        <div class="prose member__bio">
+          <Content />
+        </div>
+        <ul class="member__duties" role="list">
+          {data.responsibilities.map((r) => <li>{r}</li>)}
+        </ul>
+      </>
+    )}
+  </div>
+</GlassPanel>
+
+<style>
+  .member {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .member__portrait {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    /* Guard for the single-column case: a 4:5 tile on a 590px-wide card is
+       737px tall, which is an absurd amount of portrait. */
+    max-height: 460px;
+    overflow: hidden;
+    background-color: var(--surface-inset);
+  }
+
+  .member__photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 22%;
+  }
+
+  .member__body {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: var(--space-3);
+    /* Extra bottom padding — the specular edge crowds the top optically. */
+    padding: var(--space-5) var(--space-5) calc(var(--space-5) + 4px);
+  }
+
+  .member__head {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .member__name {
+    letter-spacing: -0.018em;
+  }
+
+  .member__creds {
+    font-size: var(--t-caption);
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.01em;
+  }
+
+  .member__position {
+    font-size: var(--t-small);
+    color: var(--text-secondary);
+  }
+
+  .member__bio {
+    font-size: var(--t-small);
+    line-height: 1.6;
+  }
+
+  .member__duties {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    padding: var(--space-4) 0 0;
+    border-block-start: 1px solid var(--border-hairline);
+    width: 100%;
+    list-style: none;
+  }
+
+  .member__duties li {
+    position: relative;
+    padding-inline-start: var(--space-4);
+    font-size: var(--t-caption);
+    line-height: 1.5;
+    color: var(--text-tertiary);
+  }
+
+  .member__duties li::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0.55em;
+    inset-inline-start: 0;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background-color: var(--accent-ring);
+  }
+
+  .member--compact {
+    min-width: 240px;
+  }
+
+  .member--compact .member__portrait {
+    aspect-ratio: 1 / 1;
+  }
+</style>

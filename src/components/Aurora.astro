@@ -1,0 +1,74 @@
+---
+/**
+ * Ambient background field.
+ *
+ * Three slow-drifting radial blobs in the emblem's own colours. This is what
+ * stops the large navy field reading as flat black, and it gives the glass
+ * surfaces something with actual colour variation to sit over — glass over a
+ * perfectly uniform field has nothing to refract and looks dead.
+ */
+interface Props {
+  intensity?: 'hero' | 'page';
+}
+const { intensity = 'page' } = Astro.props;
+---
+
+<div class:list={['aurora', `aurora--${intensity}`]} aria-hidden="true">
+  <div class="aurora__blob aurora__blob--maroon"></div>
+  <div class="aurora__blob aurora__blob--navy"></div>
+  <div class="aurora__blob aurora__blob--blush"></div>
+  <div class="aurora__vignette"></div>
+</div>
+
+<style>
+  .aurora__blob--maroon {
+    width: 62vmax;
+    height: 62vmax;
+    top: -18vmax;
+    right: -14vmax;
+    background: radial-gradient(circle, var(--e-maroon) 0%, transparent 68%);
+    animation: aurora-drift 34s var(--ease-in-out) infinite;
+  }
+
+  .aurora__blob--navy {
+    width: 70vmax;
+    height: 70vmax;
+    bottom: -26vmax;
+    left: -20vmax;
+    background: radial-gradient(circle, #1b2a6b 0%, transparent 70%);
+    animation: aurora-drift 46s var(--ease-in-out) infinite reverse;
+  }
+
+  /* The warm note. Kept very low opacity — it should register as a temperature
+     shift, not as a visible pink cloud. */
+  .aurora__blob--blush {
+    width: 40vmax;
+    height: 40vmax;
+    top: 32%;
+    left: 44%;
+    opacity: 0.14;
+    background: radial-gradient(circle, var(--e-blush) 0%, transparent 66%);
+    animation: aurora-drift 58s var(--ease-in-out) infinite;
+  }
+
+  .aurora--hero .aurora__blob--maroon {
+    opacity: 0.62;
+  }
+
+  .aurora--page .aurora__blob {
+    opacity: 0.34;
+  }
+
+  .aurora--page .aurora__blob--blush {
+    opacity: 0.1;
+  }
+
+  /* Darkens the edges so content always has a settled field behind it. */
+  .aurora__vignette {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(120% 90% at 50% 0%, transparent 30%, rgb(0 10 30 / 0.55) 100%),
+      linear-gradient(180deg, rgb(0 10 30 / 0.4) 0%, transparent 22%);
+  }
+</style>

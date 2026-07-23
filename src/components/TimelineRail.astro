@@ -1,0 +1,138 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Reveal from './Reveal.astro';
+
+interface Props {
+  entries: CollectionEntry<'timeline'>[];
+}
+
+const { entries } = Astro.props;
+const STATUS_LABEL = {
+  complete: 'Complete',
+  active: 'In progress',
+  upcoming: 'Upcoming',
+} as const;
+---
+
+<ol class="rail" role="list">
+  {entries.map((entry, i) => (
+    <Reveal as="li" index={i} class:list={['rail__item', `is-${entry.data.status}`]}>
+      <div class="rail__marker" aria-hidden="true">
+        <span class="rail__dot"></span>
+      </div>
+      <div class="rail__body">
+        <div class="rail__head">
+          <p class="t-eyebrow rail__phase">{entry.data.phase}</p>
+          <span class="rail__status">{STATUS_LABEL[entry.data.status]}</span>
+        </div>
+        <h3 class="t-h3 rail__title">{entry.data.title}</h3>
+        {entry.data.detail && <p class="rail__detail">{entry.data.detail}</p>}
+      </div>
+    </Reveal>
+  ))}
+</ol>
+
+<style>
+  .rail {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .rail__item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: var(--space-5);
+    padding-block-end: var(--space-8);
+  }
+
+  .rail__item:last-child {
+    padding-block-end: 0;
+  }
+
+  /* The connecting line is drawn on the marker column, not as a border on the
+     item, so it can stop cleanly at the last dot. */
+  .rail__marker {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding-block-start: 5px;
+  }
+
+  .rail__item:not(:last-child) .rail__marker::after {
+    content: '';
+    position: absolute;
+    inset-block: 22px 0;
+    width: 1px;
+    background: linear-gradient(
+      to bottom,
+      var(--border-soft),
+      var(--border-hairline)
+    );
+  }
+
+  .rail__dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background-color: var(--surface-overlay);
+    box-shadow: inset 0 0 0 1.5px var(--border-strong);
+  }
+
+  .is-complete .rail__dot {
+    background-color: var(--accent);
+    box-shadow: none;
+  }
+
+  /* The one place a pulsing indicator earns its keep. */
+  .is-active .rail__dot {
+    background-color: var(--signal);
+    box-shadow: 0 0 0 4px var(--signal-glow);
+  }
+
+  .rail__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-block-end: var(--space-2);
+  }
+
+  .is-upcoming .rail__phase {
+    color: var(--text-tertiary);
+  }
+
+  .rail__status {
+    padding: 0.15rem 0.55rem;
+    font-size: 0.625rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-radius: var(--r-pill);
+    color: var(--text-tertiary);
+    background-color: rgb(255 255 255 / 0.05);
+  }
+
+  .is-active .rail__status {
+    color: var(--text-primary);
+    background-color: var(--signal-maroon);
+  }
+
+  .rail__title {
+    letter-spacing: -0.016em;
+  }
+
+  .is-upcoming .rail__title {
+    color: var(--text-secondary);
+  }
+
+  .rail__detail {
+    max-width: 58ch;
+    margin-block-start: var(--space-2);
+    font-size: var(--t-small);
+    line-height: 1.6;
+    color: var(--text-tertiary);
+  }
+</style>

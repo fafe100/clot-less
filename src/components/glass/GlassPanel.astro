@@ -1,0 +1,43 @@
+---
+/**
+ * The base glass surface.
+ *
+ * There is deliberately no `blur` prop. Real backdrop-filter is applied by
+ * adding `.glass--blur` directly, and only three elements site-wide do so — see
+ * the blur budget in src/styles/glass.css. Over a flat navy section a blurred
+ * surface and a plain-fill surface look identical, and one of them costs a GPU
+ * resample every frame; making it awkward to reach for is the point.
+ */
+export interface Props {
+  as?: 'div' | 'section' | 'article' | 'aside' | 'figure' | 'li' | 'header';
+  radius?: 'md' | 'lg' | 'xl' | '2xl' | 'pill';
+  elevation?: 1 | 2 | 3;
+  interactive?: boolean;
+  class?: string;
+  [key: string]: unknown;
+}
+
+const {
+  as: Tag = 'div',
+  radius = 'lg',
+  elevation = 2,
+  interactive = false,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const classes = [
+  'glass',
+  radius !== 'lg' && `glass--r-${radius}`,
+  elevation === 1 && 'glass--e1',
+  elevation === 3 && 'glass--e3',
+  interactive && 'glass--interactive',
+  className,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<Tag class={classes} {...rest}>
+  <slot />
+</Tag>

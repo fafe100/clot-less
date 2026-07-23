@@ -1,0 +1,137 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import GlassPanel from './glass/GlassPanel.astro';
+import GlassPill from './glass/GlassPill.astro';
+import { getSponsorLogo } from '../lib/images';
+
+interface Props {
+  entry: CollectionEntry<'sponsors'>;
+}
+
+const { entry } = Astro.props;
+const { data } = entry;
+const logo = getSponsorLogo(entry.id);
+const { Content } = await render(entry);
+---
+
+<GlassPanel as="article" class="sponsor" radius="xl" interactive>
+  {/*
+    Logos sit on a light plate rather than directly on the navy field. Several
+    of these marks are black or dark grey artwork — rendered straight onto the
+    background they are effectively invisible. The plate holds contrast and
+    keeps every logo in its own brand colours, which is what brand guidelines
+    generally require.
+  */}
+  <div class="sponsor__plate">
+    {logo ? (
+      <Image
+        src={logo}
+        alt={`${data.name} logo`}
+        width={420}
+        height={200}
+        densities={[1, 2]}
+        loading="lazy"
+        decoding="async"
+        class="sponsor__logo"
+        style={`--logo-scale:${data.logoScale}`}
+      />
+    ) : (
+      <span class="sponsor__fallback">{data.shortName ?? data.name}</span>
+    )}
+  </div>
+
+  <div class="sponsor__body">
+    <h3 class="t-h3 sponsor__name">{data.name}</h3>
+
+    {data.contributionConfirmed ? (
+      <p class="sponsor__contribution">{data.contribution}</p>
+    ) : (
+      <GlassPill tone="muted">Contribution to be confirmed</GlassPill>
+    )}
+
+    <div class="prose sponsor__detail">
+      <Content />
+    </div>
+
+    {data.url && (
+      <a class="sponsor__link" href={data.url} target="_blank" rel="noopener noreferrer">
+        Visit
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M4 12L12 4M12 4H6M12 4v6" stroke="currentColor" stroke-width="1.5"
+                stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="visually-hidden">{data.name} website, opens in a new tab</span>
+      </a>
+    )}
+  </div>
+</GlassPanel>
+
+<style>
+  .sponsor {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .sponsor__plate {
+    display: grid;
+    place-items: center;
+    height: 132px;
+    padding: var(--space-5);
+    background:
+      linear-gradient(180deg, #ffffff 0%, #f2f2ef 100%);
+    border-block-end: 1px solid rgb(0 10 30 / 0.12);
+  }
+
+  .sponsor__logo {
+    width: auto;
+    max-width: calc(78% * var(--logo-scale, 1));
+    max-height: calc(76px * var(--logo-scale, 1));
+    object-fit: contain;
+  }
+
+  .sponsor__fallback {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #0a143c;
+  }
+
+  .sponsor__body {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: var(--space-3);
+    padding: var(--space-5) var(--space-5) calc(var(--space-5) + 4px);
+  }
+
+  .sponsor__name {
+    letter-spacing: -0.018em;
+  }
+
+  .sponsor__contribution {
+    font-size: var(--t-small);
+    font-weight: 500;
+    color: var(--accent);
+    line-height: 1.5;
+  }
+
+  .sponsor__detail {
+    font-size: var(--t-small);
+    line-height: 1.6;
+    color: var(--text-tertiary);
+  }
+
+  .sponsor__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    margin-block-start: auto;
+    padding-block-start: var(--space-2);
+    font-size: var(--t-caption);
+    font-weight: 600;
+    text-decoration: none;
+  }
+</style>

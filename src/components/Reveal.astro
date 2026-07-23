@@ -1,0 +1,19 @@
+---
+/**
+ * Scroll-reveal wrapper. Stagger is capped at index 6 — beyond roughly 360ms
+ * a staggered group stops feeling choreographed and starts feeling slow.
+ */
+export interface Props {
+  index?: number;
+  as?: 'div' | 'section' | 'article' | 'li' | 'header' | 'figure';
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { index = 0, as: Tag = 'div', class: className, ...rest } = Astro.props;
+const delay = Math.min(index, 6) * 60;
+---
+
+<Tag class:list={['reveal', className]} style={`--reveal-delay:${delay}ms`} {...rest}>
+  <slot />
+</Tag>

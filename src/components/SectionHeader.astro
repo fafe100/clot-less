@@ -1,0 +1,55 @@
+---
+export interface Props {
+  eyebrow?: string;
+  title: string;
+  lede?: string;
+  align?: 'start' | 'center';
+  as?: 'h1' | 'h2' | 'h3';
+  class?: string;
+}
+
+const { eyebrow, title, lede, align = 'start', as: Tag = 'h2', class: className } = Astro.props;
+const titleClass = Tag === 'h1' ? 't-h1' : 't-h2';
+---
+
+<header class:list={['sec-head', `sec-head--${align}`, className]}>
+  {eyebrow && (
+    <p class="t-eyebrow">
+      <span class="sec-head__tick" aria-hidden="true"></span>
+      {eyebrow}
+    </p>
+  )}
+  <Tag class={titleClass}>{title}</Tag>
+  {lede && <p class="t-lede sec-head__lede">{lede}</p>}
+</header>
+
+<style>
+  .sec-head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin-block-end: var(--space-8);
+  }
+
+  .sec-head--center {
+    align-items: center;
+    text-align: center;
+  }
+
+  .sec-head__lede {
+    max-width: 58ch;
+  }
+
+  .sec-head--center .sec-head__lede {
+    margin-inline: auto;
+  }
+
+  /* One of the very few licensed uses of the signal red: a 2px hairline. */
+  .sec-head__tick {
+    display: inline-block;
+    width: 14px;
+    height: 2px;
+    border-radius: 2px;
+    background-color: var(--signal);
+  }
+</style>

@@ -1,0 +1,131 @@
+---
+import { site, nav } from '../data/site';
+import { link } from '../lib/link';
+import Emblem from './Emblem.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="foot">
+  <div class="shell foot__inner">
+    <div class="foot__brand">
+      <Emblem size={72} />
+      <div>
+        <p class="foot__name">{site.team}</p>
+        <p class="t-caption">{site.institution} · {site.campaign}</p>
+      </div>
+    </div>
+
+    <nav class="foot__nav" aria-label="Footer">
+      <ul role="list">
+        {nav.slice(1).map((item) => (
+          <li><a href={link(item.href)}>{item.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="foot__meta">
+      <a class="foot__contact" href={`mailto:${site.contact}`}>{site.contact}</a>
+      {/* Mandatory: prefers-reduced-transparency is not widely supported, so
+          the media query alone cannot satisfy the requirement. */}
+      <button class="foot__a11y" type="button" data-transparency-toggle aria-pressed="false">
+        Reduce transparency
+      </button>
+    </div>
+  </div>
+
+  <div class="shell foot__legal">
+    <p class="t-caption">© {year} {site.team}. {site.experiment}.</p>
+    <p class="t-caption">
+      Flown with the Canadian Space Agency and the National Research Council of Canada.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    position: relative;
+    z-index: var(--z-content);
+    margin-block-start: var(--space-16);
+    padding-block: var(--space-10) var(--space-6);
+    border-block-start: 1px solid var(--border-hairline);
+    background: linear-gradient(180deg, transparent, rgb(0 10 30 / 0.6));
+  }
+
+  .foot__inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-8);
+    justify-content: space-between;
+    align-items: start;
+  }
+
+  .foot__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .foot__name {
+    font-weight: 650;
+    color: var(--text-primary);
+    letter-spacing: -0.014em;
+  }
+
+  .foot__nav ul {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(120px, auto));
+    gap: var(--space-2) var(--space-8);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .foot__nav a {
+    font-size: var(--t-small);
+    color: var(--text-tertiary);
+    text-decoration: none;
+  }
+
+  .foot__nav a:hover {
+    color: var(--text-primary);
+  }
+
+  .foot__meta {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: var(--space-3);
+  }
+
+  .foot__contact {
+    font-size: var(--t-small);
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .foot__a11y {
+    padding: 0.4rem 0.85rem;
+    font-size: var(--t-caption);
+    font-weight: 500;
+    color: var(--text-tertiary);
+    border-radius: var(--r-pill);
+    background-color: rgb(255 255 255 / 0.05);
+    box-shadow: inset 0 0 0 1px var(--border-hairline);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+
+  .foot__a11y:hover {
+    color: var(--text-primary);
+  }
+
+  .foot__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-6);
+    justify-content: space-between;
+    margin-block-start: var(--space-8);
+    padding-block-start: var(--space-5);
+    border-block-start: 1px solid var(--border-hairline);
+  }
+</style>

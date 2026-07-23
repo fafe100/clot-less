@@ -1,0 +1,134 @@
+---
+import GlassPanel from './glass/GlassPanel.astro';
+
+/**
+ * The fluid path, as a stepped rail. Rendered from a list so it stays a real
+ * ordered list for assistive technology — the visual chevrons are decoration
+ * layered on top, not the structure.
+ */
+const STEPS = [
+  { label: 'IV bag', note: 'Drug or saline' },
+  { label: 'Peristaltic pump', note: '2.5 / 5.0 mL·min⁻¹' },
+  { label: 'Sensor tap A', note: 'Upstream pressure' },
+  { label: '4-way splitter', note: 'To four channels' },
+  { label: 'Pinch valve', note: 'Normally open' },
+  { label: 'ibidi µ-Slide', note: 'Clot sits here' },
+  { label: 'Check valve', note: 'Prevents backflow' },
+  { label: 'Sensor tap B', note: 'Downstream pressure' },
+  { label: 'Waste bag', note: 'Sealed collection' },
+];
+---
+
+<GlassPanel class="flow" radius="xl">
+  <div class="flow__head">
+    <p class="t-eyebrow">Fluid path</p>
+    <h3 class="t-h3">From reservoir to waste</h3>
+    <p class="flow__lede">
+      The two sensor taps bracket the microchannel. Their difference is the
+      pressure drop across the clot — and watching that difference collapse is
+      watching the clot dissolve.
+    </p>
+  </div>
+
+  <div class="flow__scroll" tabindex="0" role="region" aria-label="Fluid path, nine stages">
+    <ol class="flow__rail" role="list">
+      {STEPS.map((step, i) => (
+        <li class:list={['flow__step', (i === 5) && 'is-key']}>
+          <span class="flow__n t-num">{String(i + 1).padStart(2, '0')}</span>
+          <span class="flow__label">{step.label}</span>
+          <span class="flow__note">{step.note}</span>
+        </li>
+      ))}
+    </ol>
+  </div>
+</GlassPanel>
+
+<style>
+  .flow {
+    padding: var(--space-6) var(--space-6) calc(var(--space-6) + 4px);
+  }
+
+  .flow__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-block-end: var(--space-6);
+  }
+
+  .flow__lede {
+    max-width: 62ch;
+    font-size: var(--t-small);
+    line-height: 1.6;
+  }
+
+  .flow__scroll {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    margin-inline: calc(var(--space-6) * -1);
+    padding-inline: var(--space-6);
+  }
+
+  .flow__rail {
+    display: flex;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .flow__step {
+    position: relative;
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 122px;
+    padding: var(--space-3) var(--space-4) var(--space-3) var(--space-3);
+    border-radius: var(--r-sm);
+    background-color: rgb(255 255 255 / 0.04);
+    box-shadow: inset 0 0 0 1px var(--border-hairline);
+  }
+
+  /* Connector chevrons between steps. */
+  .flow__step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    inset-inline-end: -11px;
+    inset-block-start: 50%;
+    width: 7px;
+    height: 7px;
+    margin-block-start: -4px;
+    border-inline-end: 1.5px solid var(--border-strong);
+    border-block-start: 1.5px solid var(--border-strong);
+    transform: rotate(45deg);
+  }
+
+  /* The channel is where the science happens — the one highlighted step. */
+  .flow__step.is-key {
+    background-color: var(--accent-muted);
+    box-shadow: inset 0 0 0 1px var(--accent-ring);
+  }
+
+  .flow__n {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--text-tertiary);
+  }
+
+  .is-key .flow__n {
+    color: var(--accent);
+  }
+
+  .flow__label {
+    font-size: var(--t-caption);
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .flow__note {
+    font-size: 0.6875rem;
+    line-height: 1.35;
+    color: var(--text-tertiary);
+  }
+</style>

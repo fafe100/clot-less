@@ -1,0 +1,174 @@
+---
+import GlassPanel from './glass/GlassPanel.astro';
+
+/**
+ * The parabola trace. An inline SVG rather than an image so it scales, themes
+ * with the tokens, and stays crisp — with a text equivalent for screen readers
+ * since the shape itself carries the meaning.
+ */
+---
+
+<GlassPanel class="profile" radius="xl">
+  <div class="profile__head">
+    <p class="t-eyebrow">Flight profile</p>
+    <h3 class="t-h3">One parabola, three gravity regimes</h3>
+    <p class="profile__lede">
+      Twelve parabolas across two flight days, flown in two sets of six with a
+      five-minute level-flight pause between them. The science happens in the
+      twenty seconds at the top.
+    </p>
+  </div>
+
+  <figure class="profile__figure">
+    <div class="profile__scroll" tabindex="0" role="region" aria-label="Parabola gravity profile diagram">
+      <svg viewBox="0 0 720 200" class="profile__svg" role="img"
+           aria-labelledby="profile-title profile-desc">
+        <title id="profile-title">Gravity profile of a single parabola</title>
+        <desc id="profile-desc">
+          Gravity rises to about 2 g during a one-minute pull-up, drops to near
+          zero g for approximately twenty seconds at the apex, then returns to
+          about 2 g during a one-minute pull-out.
+        </desc>
+
+        <!-- 1 g reference -->
+        <line x1="0" y1="140" x2="720" y2="140" stroke="var(--border-hairline)"
+              stroke-width="1" stroke-dasharray="3 5"/>
+        <text x="4" y="155" class="profile__axis">1 g</text>
+
+        <!-- microgravity window -->
+        <rect x="270" y="18" width="180" height="164" rx="10"
+              fill="var(--accent-muted)" stroke="var(--accent-ring)" stroke-width="1"/>
+
+        <!-- the trace -->
+        <path d="M0 140 L120 140 C170 140 180 60 210 46 L270 40 L450 40 L510 46
+                 C540 60 550 140 600 140 L720 140"
+              fill="none" stroke="var(--signal)" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+
+        <text x="150" y="118" class="profile__label">~2 g</text>
+        <text x="360" y="72" class="profile__label profile__label--accent"
+              text-anchor="middle">~0 g</text>
+        <text x="360" y="92" class="profile__sub" text-anchor="middle">20 s</text>
+        <text x="570" y="118" class="profile__label">~2 g</text>
+
+        <text x="120" y="176" class="profile__sub">Pull-up ~1 min</text>
+        <text x="600" y="176" class="profile__sub" text-anchor="end">Pull-out ~1 min</text>
+      </svg>
+    </div>
+  </figure>
+
+  <ol class="profile__steps" role="list">
+    <li>
+      <span class="profile__step-n t-num">01</span>
+      <p><strong>T−2 s.</strong> The operator presses the button. The assigned
+      pinch valve opens and the pump starts at its setpoint.</p>
+    </li>
+    <li>
+      <span class="profile__step-n t-num">02</span>
+      <p><strong>Microgravity.</strong> Fluid perfuses the clot. Both pressure
+      sensors sample continuously and the camera records throughout.</p>
+    </li>
+    <li>
+      <span class="profile__step-n t-num">03</span>
+      <p><strong>Pull-out.</strong> A second press stops the pump and re-energises
+      the valve, isolating the channel and returning pressure to baseline.</p>
+    </li>
+  </ol>
+</GlassPanel>
+
+<style>
+  .profile {
+    padding: var(--space-6) var(--space-6) calc(var(--space-6) + 4px);
+  }
+
+  .profile__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-block-end: var(--space-6);
+  }
+
+  .profile__lede {
+    max-width: 62ch;
+    font-size: var(--t-small);
+    line-height: 1.6;
+  }
+
+  .profile__figure {
+    margin: 0;
+  }
+
+  /* Wide diagrams scroll inside their own container — the page body never
+     scrolls horizontally. */
+  .profile__scroll {
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .profile__svg {
+    display: block;
+    min-width: 560px;
+    width: 100%;
+    height: auto;
+  }
+
+  .profile__axis,
+  .profile__sub {
+    font-family: var(--font-ui);
+    font-size: 11px;
+    fill: var(--text-tertiary);
+  }
+
+  .profile__label {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    fill: var(--text-secondary);
+  }
+
+  .profile__label--accent {
+    fill: var(--accent);
+    font-size: 15px;
+  }
+
+  .profile__steps {
+    display: grid;
+    gap: var(--space-4);
+    margin: var(--space-6) 0 0;
+    padding: var(--space-5) 0 0;
+    border-block-start: 1px solid var(--border-hairline);
+    list-style: none;
+  }
+
+  .profile__steps li {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: var(--space-3);
+    align-items: start;
+  }
+
+  .profile__step-n {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--text-tertiary);
+    padding-block-start: 2px;
+  }
+
+  .profile__steps p {
+    font-size: var(--t-small);
+    line-height: 1.6;
+    color: var(--text-tertiary);
+  }
+
+  .profile__steps strong {
+    color: var(--text-primary);
+  }
+
+  @media (width >= 760px) {
+    .profile__steps {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+    }
+  }
+</style>

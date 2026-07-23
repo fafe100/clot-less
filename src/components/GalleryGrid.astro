@@ -1,0 +1,156 @@
+---
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+export interface GalleryItem {
+  id: string;
+  image: ImageMetadata;
+  thumb: ImageMetadata;
+  alt: string;
+  caption?: string;
+  category: string;
+  phase?: string;
+  /** Shoot date — distinct dates are what define a "build session". */
+  date?: Date;
+  span: string;
+  order: number;
+}
+
+interface Props {
+  items: GalleryItem[];
+}
+
+const { items } = Astro.props;
+
+// Pre-resolve the full-size sources so the lightbox can swap instantly rather
+// than requesting an unoptimised original on first open.
+//
+// Clamped to the intrinsic width: asking for 1600 from a 1280px source emits an
+// upscaled, softer, *larger* file than the original.
+const fulls = await Promise.all(
+  items.map((item) =>
+    getImage({
+      src: item.image,
+      width: Math.min(1600, item.image.width),
+      format: 'webp',
+    }),
+  ),
+);
+---
+
+<ul class="gal" data-gallery role="list">
+  {items.map((item, i) => (
+    <li class:list={['gal__cell', `span-${item.span}`]} data-item-category={item.category}>
+      <button
+        class="gal__btn"
+        type="button"
+        data-lightbox-open
+        data-full={fulls[i]!.src}
+        data-alt={item.alt}
+        data-caption={item.caption ?? ''}
+        data-phase={item.phase ?? ''}
+      >
+        <Image
+          src={item.thumb}
+          alt={item.alt}
+          widths={[380, 760]}
+          sizes="(width < 640px) 92vw, (width < 1024px) 46vw, 30vw"
+          loading={i < 4 ? 'eager' : 'lazy'}
+          decoding="async"
+          class="gal__img"
+        />
+        {item.caption && (
+          <span class="gal__cap">
+            <span class="gal__cap-text">{item.caption}</span>
+          </span>
+        )}
+        <span class="visually-hidden">Open larger view</span>
+      </button>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .gal {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-auto-rows: 210px;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .gal__cell {
+    min-width: 0;
+  }
+
+  .gal__cell[hidden] {
+    display: none;
+  }
+
+  .span-2x1 { grid-column: span 2; }
+  .span-1x2 { grid-row: span 2; }
+  .span-2x2 { grid-column: span 2; grid-row: span 2; }
+
+  @media (width < 640px) {
+    .gal {
+      grid-template-columns: 1fr;
+      grid-auto-rows: 240px;
+    }
+    .span-2x1, .span-2x2 { grid-column: span 1; }
+    .span-1x2, .span-2x2 { grid-row: span 1; }
+  }
+
+  .gal__btn {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+    border-radius: var(--r-lg);
+    background-color: var(--surface-inset);
+    box-shadow: var(--shadow-1), inset 0 0 0 1px var(--border-hairline);
+    transition:
+      transform var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur-fast) var(--ease-out);
+  }
+
+  .gal__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+
+  /* The caption sits on its own gradient scrim, never on bare photo — that is
+     what keeps it legible over an arbitrary image. */
+  .gal__cap {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    padding: var(--space-8) var(--space-4) var(--space-3);
+    background: linear-gradient(to top, rgb(0 10 30 / 0.92) 0%, rgb(0 10 30 / 0) 100%);
+    text-align: start;
+  }
+
+  .gal__cap-text {
+    display: block;
+    font-size: var(--t-caption);
+    font-weight: 500;
+    line-height: 1.4;
+    color: #fafafa;
+    text-shadow: 0 1px 3px rgb(0 6 20 / 0.8);
+  }
+
+  @media (hover: hover) {
+    .gal__btn:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-3), inset 0 0 0 1px var(--border-strong);
+    }
+    .gal__btn:hover .gal__img {
+      transform: scale(1.045);
+    }
+  }
+</style>

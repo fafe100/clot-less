@@ -1,0 +1,117 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import GlassPanel from './glass/GlassPanel.astro';
+import SpecTable from './SpecTable.astro';
+import Reveal from './Reveal.astro';
+
+interface Props {
+  entry: CollectionEntry<'design'>;
+  index: number;
+}
+
+const { entry, index } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+
+// Alternate the image side so a run of subsystems doesn't read as a list.
+const flipped = index % 2 === 1;
+---
+
+<Reveal as="section" class:list={['sub', flipped && 'sub--flipped']}>
+  <div class="sub__copy">
+    {data.kicker && <p class="t-eyebrow">{data.kicker}</p>}
+    <h3 class="t-h2 sub__title">{data.title}</h3>
+    <p class="t-lede sub__summary">{data.summary}</p>
+    <div class="prose sub__body"><Content /></div>
+  </div>
+
+  <div class="sub__aside">
+    {data.hero && (
+      /* CAD renders are light artwork on a white ground, so they sit on their
+         own light plate rather than being knocked out onto the navy field. */
+      <GlassPanel class="sub__figure" radius="xl" elevation={3}>
+        <Image
+          src={data.hero}
+          alt={data.heroAlt ?? `${data.title} — CAD render`}
+          widths={[480, 900]}
+          sizes="(width < 900px) 92vw, 520px"
+          loading="lazy"
+          decoding="async"
+          class="sub__img"
+        />
+      </GlassPanel>
+    )}
+
+    {data.specs.length > 0 && (
+      <GlassPanel class="sub__specs" radius="xl">
+        <SpecTable rows={data.specs} caption="Specification" />
+      </GlassPanel>
+    )}
+  </div>
+</Reveal>
+
+<style>
+  .sub {
+    display: grid;
+    gap: var(--space-8);
+    align-items: start;
+    padding-block: var(--space-10);
+    border-block-start: 1px solid var(--border-hairline);
+  }
+
+  .sub__copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .sub__title {
+    letter-spacing: -0.022em;
+  }
+
+  .sub__summary {
+    max-width: 46ch;
+  }
+
+  .sub__body {
+    font-size: var(--t-small);
+    line-height: 1.7;
+  }
+
+  .sub__aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .sub__figure {
+    overflow: hidden;
+    padding: var(--space-2);
+    background-color: rgb(250 250 248 / 0.94);
+  }
+
+  .sub__img {
+    width: 100%;
+    height: auto;
+    /* Nesting law: outer --r-xl (32) − 8px padding = 24 = --r-lg. */
+    border-radius: var(--r-lg);
+  }
+
+  .sub__specs {
+    padding: var(--space-5) var(--space-5) calc(var(--space-5) + 4px);
+  }
+
+  @media (width >= 900px) {
+    .sub {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-10);
+      padding-block: var(--space-12);
+    }
+
+    .sub--flipped .sub__copy {
+      order: 2;
+    }
+  }
+</style>
