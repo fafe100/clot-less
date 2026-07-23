@@ -1,0 +1,147 @@
+/* ============================================================================
+   Design tokens — every value derives from the CLOT-LESS mission emblem.
+   Custom properties only. No selectors beyond :root.
+   ========================================================================== */
+
+:root {
+  color-scheme: dark;
+
+  /* ── Raw emblem palette ──────────────────────────────────────────────────
+     Sampled directly from Emblem-no-background.png. Only the two still
+     referenced are kept; the rest of the sampled ramp lives on in the semantic
+     tokens below, which is where components should reach for colour. */
+  --e-maroon: #6e1414;
+  --e-blush: #fabeb4;
+
+  /* ── Surfaces — lighter as they elevate ─────────────────────────────────── */
+  --surface-base: #0a143c;
+  --surface-raised: #101b47;
+  --surface-overlay: #16224f;
+  --surface-inset: #071031;
+
+  /* ── Glass fills ────────────────────────────────────────────────────────── */
+  --glass-fill-subtle: rgb(22 34 79 / 0.44);
+  --glass-fill: rgb(22 34 79 / 0.58);
+  --glass-fill-strong: rgb(16 27 71 / 0.74);
+  --glass-fill-solid: rgb(16 27 71 / 0.94);
+  --glass-tint-warm: rgb(250 190 180 / 0.05);
+
+  /* ── Text tiers ──────────────────────────────────────────────────────────
+     Ratios computed against --surface-base #0A143C. Verified, not estimated.
+     Worst realistic case is a glass panel over a bright photo, which lands near
+     --surface-overlay; --text-tertiary still clears AA there at 4.89:1, so
+     every tier holds regardless of what sits behind it.
+
+     There is deliberately no dimmer tier than --text-tertiary. One existed and
+     came out at 3.10:1 — below AA at every size it was actually used. Any
+     colour dim enough to read as a fourth step fails; any colour that passes is
+     indistinguishable from tertiary. So the ramp stops here. */
+  --text-primary: #fafafa; /* 17.08:1  AAA */
+  --text-secondary: #b8c0dc; /*  9.86:1  AAA — long-form body */
+  --text-tertiary: #8891b0; /*  5.71:1  AA  — captions, metadata */
+  --text-on-accent: #0a143c; /* 11.11:1  AAA on the blush button fill */
+
+  /* ── Accent ramp ─────────────────────────────────────────────────────────
+     Blush is the interactive colour, not red. See the usage law in README.md. */
+  --accent: #fabeb4;
+  --accent-hover: #ffd4cc;
+  --accent-muted: rgb(250 190 180 / 0.14);
+  --accent-ring: rgb(250 190 180 / 0.45);
+
+  /* Reserved: emblem, vessel motifs, active indicators, hairlines ≤2px.
+     4.92:1 on navy — it technically clears AA, but it fails perceptually:
+     red and navy sit near-opposite in hue at similar luminance, so edges
+     shimmer. Never use it for text. */
+  --signal: #fa3c46;
+  --signal-maroon: #6e1414;
+  --signal-glow: rgb(250 60 70 / 0.3);
+
+  /* ── Borders and specular edges ─────────────────────────────────────────── */
+  --border-hairline: rgb(255 255 255 / 0.08);
+  --border-soft: rgb(255 255 255 / 0.12);
+  --border-strong: rgb(255 255 255 / 0.2);
+  --specular-top: rgb(255 255 255 / 0.55);
+  --specular-mid: rgb(255 255 255 / 0.1);
+  --specular-warm: rgb(250 190 180 / 0.12);
+
+  /* ── Radii — nesting law: inner radius = outer radius − padding ─────────── */
+  --r-xs: 8px;
+  --r-sm: 12px;
+  --r-md: 18px;
+  --r-lg: 24px;
+  --r-xl: 32px;
+  --r-2xl: 44px;
+  --r-pill: 999px;
+
+  /* ── Blur ───────────────────────────────────────────────────────────────── */
+  --blur-lg: 28px;
+  --blur-xl: 44px;
+  --saturate: 180%;
+
+  /* ── Elevation ──────────────────────────────────────────────────────────── */
+  --shadow-1:
+    0 2px 8px -2px rgb(0 6 20 / 0.35),
+    0 6px 20px -8px rgb(0 6 20 / 0.45);
+  --shadow-2:
+    0 1px 2px rgb(0 6 20 / 0.28),
+    0 8px 24px -6px rgb(0 6 20 / 0.45),
+    0 24px 64px -12px rgb(0 6 20 / 0.55);
+  --shadow-3:
+    0 2px 4px rgb(0 6 20 / 0.32),
+    0 16px 40px -8px rgb(0 6 20 / 0.5),
+    0 40px 96px -16px rgb(0 6 20 / 0.62);
+
+  /* ── Motion ─────────────────────────────────────────────────────────────── */
+  --ease-out: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-decel: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: linear(
+    0, 0.006, 0.025 2.8%, 0.101 6.1%, 0.539 18.9%, 0.721 25.3%, 0.849 31.5%,
+    0.937 38.1%, 0.968 41.8%, 0.991 45.7%, 1.006 50.1%, 1.015 60%, 1.006 76.9%, 1
+  );
+  --dur-micro: 150ms;
+  --dur-fast: 220ms;
+  --dur-base: 320ms;
+  --dur-slow: 480ms;
+  --dur-hero: 720ms;
+
+  /* ── Typography ─────────────────────────────────────────────────────────── */
+  --font-ui:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Segoe UI Variable Text", "Segoe UI", system-ui, Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+  --t-display: clamp(2.75rem, 1.8rem + 4.2vw, 5.25rem);
+  --t-h1: clamp(2.25rem, 1.6rem + 2.6vw, 3.5rem);
+  --t-h2: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
+  --t-h3: 1.375rem;
+  --t-lede: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+  --t-body: 1rem;
+  --t-small: 0.875rem;
+  --t-caption: 0.8125rem;
+  --t-eyebrow: 0.6875rem;
+
+  /* ── Layout ─────────────────────────────────────────────────────────────── */
+  --content-max: 1180px;
+  --prose-max: 68ch;
+  --gutter: clamp(1.25rem, 4vw, 3rem);
+  --nav-h: 64px;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+  --space-10: 4.5rem;
+  --space-12: 6rem;
+  --space-16: 9rem;
+
+  /* ── Stacking ───────────────────────────────────────────────────────────── */
+  --z-aurora: 0;
+  --z-content: 10;
+  --z-nav: 100;
+  --z-modal: 1000;
+}

@@ -1,0 +1,199 @@
+/* ============================================================================
+   THE GLASS RECIPE
+
+   Six details separate this from a cheap blurred div. Do not drop any of them:
+
+   1. saturate(180%) inside backdrop-filter. Plain blur() averages colour toward
+      grey and reads as fog; the saturation boost is what makes the backdrop
+      bloom through. It is the single strongest tell.
+   2. The specular ring is a masked *gradient*, not a flat border. Bright at the
+      top-left, warm blush at the bottom-right — light behaving like light.
+   3. A four-part shadow stack. One flat shadow reads as a sticker.
+   4. Grain over the whole field (see GrainOverlay) to kill banding.
+   5. Radius nesting law: inner radius = outer radius − padding.
+   6. Asymmetric padding — more at the bottom, because the specular top edge
+      visually crowds the first line.
+
+   BLUR BUDGET — at most three backdrop-filter layers composited at once.
+   Blurring a flat navy field produces a flat navy field, so `.glass--blur` is
+   opt-in and belongs only on the nav pill, the lightbox backdrop, and the
+   mobile menu sheet. Everything else uses the identical fill and ring without
+   paying for a GPU resample every frame.
+   ========================================================================== */
+
+.glass {
+  position: relative;
+  isolation: isolate;
+  border-radius: var(--r-lg);
+  background-color: var(--glass-fill);
+  background-image:
+    linear-gradient(180deg, rgb(255 255 255 / 0.045) 0%, rgb(255 255 255 / 0) 42%),
+    radial-gradient(120% 80% at 12% 0%, var(--glass-tint-warm) 0%, transparent 60%);
+  box-shadow:
+    var(--shadow-2),
+    inset 0 1px 0 rgb(255 255 255 / 0.06);
+  color: var(--text-secondary);
+}
+
+/* The specular ring. A uniform 1px solid border reads as a stroked box; this
+   masked gradient reads as an edge catching light. */
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(
+    160deg,
+    var(--specular-top) 0%,
+    var(--specular-mid) 26%,
+    rgb(255 255 255 / 0.02) 54%,
+    var(--specular-warm) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── Opt-in real blur. Three elements only. ─────────────────────────────── */
+.glass--blur {
+  background-color: var(--glass-fill-subtle);
+  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(var(--saturate));
+  backdrop-filter: blur(var(--blur-lg)) saturate(var(--saturate));
+}
+
+/* Opaque fill. Used where a surface sits over imagery or must guarantee
+   contrast on its own — text never relies on backdrop-filter alone. */
+.glass--solid {
+  background-color: var(--glass-fill-solid);
+}
+
+/* ── Elevation overrides ────────────────────────────────────────────────── */
+.glass--e1 {
+  box-shadow: var(--shadow-1), inset 0 1px 0 rgb(255 255 255 / 0.06);
+}
+.glass--e3 {
+  box-shadow: var(--shadow-3), inset 0 1px 0 rgb(255 255 255 / 0.07);
+}
+
+/* ── Radius overrides ───────────────────────────────────────────────────── */
+.glass--r-md { border-radius: var(--r-md); }
+.glass--r-xl { border-radius: var(--r-xl); }
+.glass--r-2xl { border-radius: var(--r-2xl); }
+.glass--r-pill { border-radius: var(--r-pill); }
+
+/* ── Interactive lift ───────────────────────────────────────────────────── */
+.glass--interactive {
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .glass--interactive:hover {
+    transform: translateY(-3px) scale(1.006);
+    background-color: var(--glass-fill-strong);
+    box-shadow: var(--shadow-3), inset 0 1px 0 rgb(255 255 255 / 0.1);
+  }
+
+  /* The ring brightens with the lift — the edge catching more light. */
+  .glass--interactive:hover::before {
+    background: linear-gradient(
+      160deg,
+      rgb(255 255 255 / 0.7) 0%,
+      rgb(255 255 255 / 0.16) 26%,
+      rgb(255 255 255 / 0.03) 54%,
+      rgb(250 190 180 / 0.2) 100%
+    );
+  }
+}
+
+.glass--interactive:active {
+  transform: translateY(-1px) scale(0.998);
+  transition-duration: var(--dur-micro);
+}
+
+/* Progressive: Apple's actual corner geometry where the browser supports it. */
+@supports (corner-shape: squircle) {
+  .glass,
+  .glass::before {
+    corner-shape: squircle;
+  }
+}
+
+/* ============================================================================
+   FALLBACKS AND REDUCED TRANSPARENCY
+   ========================================================================== */
+
+/* 1. No backdrop-filter support → opaque fill, ring and shadows retained. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass--blur {
+    background-color: var(--glass-fill-solid);
+  }
+}
+
+/* 2. OS-level preference. Progressive — this query is NOT Baseline, which is
+      exactly why the manual toggle below is mandatory rather than optional. */
+@media (prefers-reduced-transparency: reduce) {
+  .glass,
+  .glass--blur {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-color: var(--surface-raised);
+    background-image: none;
+  }
+
+  .glass::before {
+    background: var(--border-soft);
+  }
+
+  .grain,
+  .aurora {
+    display: none;
+  }
+}
+
+/* 3. Manual override — the reliable path. Applied pre-paint by an inline
+      script in <head> so there is no flash. */
+:root[data-transparency="reduce"] .glass,
+:root[data-transparency="reduce"] .glass--blur {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  background-color: var(--surface-raised);
+  background-image: none;
+}
+
+:root[data-transparency="reduce"] .glass::before {
+  background: var(--border-soft);
+}
+
+:root[data-transparency="reduce"] .grain,
+:root[data-transparency="reduce"] .aurora {
+  display: none;
+}
+
+/* 4. Windows High Contrast / forced colours. */
+@media (forced-colors: active) {
+  .glass,
+  .glass--blur {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: Canvas;
+    background-image: none;
+    border: 1px solid CanvasText;
+    box-shadow: none;
+  }
+
+  .glass::before {
+    display: none;
+  }
+}

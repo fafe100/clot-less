@@ -1,0 +1,126 @@
+/* ============================================================================
+   Motion — scroll reveals, ambient animation, and the reduced-motion contract.
+   ========================================================================== */
+
+/* Reveal-on-scroll.
+
+   The hidden state is scoped to html.js-reveal. That class is added by an
+   inline <head> script which simultaneously arms a 2s failsafe to remove it
+   again; reveal.ts cancels the failsafe once it takes over. So the content is
+   hidden only while code capable of revealing it is demonstrably alive —
+   whether JS is disabled, blocked, or throws, the page ends up readable.
+   Implementations that default to opacity:0 in plain CSS hide their content
+   permanently the first time a script fails. */
+.js-reveal .reveal {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  transition:
+    opacity var(--dur-slow) var(--ease-decel),
+    transform var(--dur-slow) var(--ease-decel);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.js-reveal .reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  will-change: auto;
+}
+
+/* ── Ambient emblem motion ──────────────────────────────────────────────── */
+@keyframes emblem-float {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -10px, 0);
+  }
+}
+
+/* Counter-phased against the float so the two never sync — that lack of
+   synchronisation is what reads as organic rather than mechanical. */
+@keyframes emblem-glow {
+  from {
+    opacity: 0.5;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 0.75;
+    transform: scale(1.03);
+  }
+}
+
+@keyframes aurora-drift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, -3%, 0) rotate(4deg) scale(1.08);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+}
+
+@keyframes fade-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ── Hero entrance — plays once, unconditionally, so the fold never sits
+      empty waiting on an observer. ─────────────────────────────────────── */
+.enter {
+  animation: fade-rise var(--dur-hero) var(--ease-decel) both;
+  animation-delay: var(--enter-delay, 0ms);
+}
+
+/* ============================================================================
+   REDUCED MOTION
+
+   Global kill-switch. reveal.ts also checks the query and applies .is-visible
+   immediately rather than observing, so nothing depends on a transition that
+   will never run.
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    /* Without this the hero still pops in element by element over 460ms:
+       zeroing the duration leaves --enter-delay untouched, and .enter uses
+       fill-mode both, so each item waits its turn before appearing. */
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+
+  .js-reveal .reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .emblem__art,
+  .emblem__glow,
+  .aurora__blob {
+    animation: none !important;
+  }
+}
