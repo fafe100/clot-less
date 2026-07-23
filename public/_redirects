@@ -1,0 +1,13 @@
+# Netlify / Cloudflare Pages redirect rules.
+#
+# clotless.ca is canonical. canrgx.ca is held by the team but points here, so
+# the two domains never compete as separate copies of the same site — and so a
+# visitor landing on canrgx.ca is never misled into thinking this is the
+# official SEDS-Canada programme site.
+#
+# 301 = permanent, which is what search engines need to consolidate the two.
+https://canrgx.ca/*      https://clotless.ca/:splat   301!
+https://www.canrgx.ca/*  https://clotless.ca/:splat   301!
+
+# Canonicalise www -> apex on the primary domain too.
+https://www.clotless.ca/*  https://clotless.ca/:splat  301!

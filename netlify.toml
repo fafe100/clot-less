@@ -1,0 +1,28 @@
+# Netlify build configuration.
+#
+# Committing this means the deploy settings live with the code rather than in a
+# dashboard, so a rebuild years from now produces the same site.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Pinned deliberately. Netlify's default Node is older than this project's
+  # local toolchain, and an unpinned build is the usual reason a site that
+  # builds fine on a laptop fails in CI. 22 is the current LTS and satisfies
+  # Astro 5's engine requirement.
+  NODE_VERSION = "22"
+
+# Long-cache the fingerprinted build output. Every file under /_astro/ has a
+# content hash in its name, so it can never go stale.
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
