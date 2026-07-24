@@ -7,6 +7,7 @@ import GrainOverlay from '../components/GrainOverlay.astro';
 import NavBar from '../components/nav/NavBar.astro';
 import MobileMenu from '../components/nav/MobileMenu.astro';
 import Footer from '../components/Footer.astro';
+import StructuredData from '../components/StructuredData.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -26,7 +27,7 @@ const ogImage = new URL('/og-card.png', Astro.site);
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en-CA">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -49,6 +50,11 @@ const ogImage = new URL('/og-card.png', Astro.site);
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
+
+    {/* en-CA rather than plain en: this is a Canadian Space Agency campaign and
+        the audience, funders and search intent are Canadian. */}
+    <meta property="og:locale" content="en_CA" />
+    <StructuredData />
 
     <ClientRouter />
 

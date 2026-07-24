@@ -4,7 +4,7 @@ credentials: MD Student, HBSc
 affiliation: UBC Faculty of Medicine — Vancouver-Fraser Medical Program
 position: Third-year MD student
 role: Mission Specialist
-order: 3
+order: 4
 featured: true
 responsibilities:
   - Background research, literature synthesis and scientific rationale

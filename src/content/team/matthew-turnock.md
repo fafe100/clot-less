@@ -4,7 +4,7 @@ credentials: MD, Anesthesiologist
 affiliation: UBC — Department of Anesthesiology, Pharmacology & Therapeutics
 position: Principal Investigator, clinical UBC faculty
 role: Principal Investigator
-order: 7
+order: 3
 featured: true
 responsibilities:
   - Scientific and operational supervision

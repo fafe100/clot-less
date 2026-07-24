@@ -1,0 +1,68 @@
+---
+import { getCollection } from 'astro:content';
+import { site } from '../data/site';
+
+/**
+ * JSON-LD structured data.
+ *
+ * This is what lets a search engine understand the site as *a research project
+ * with named people and funders*, rather than as six pages of prose. It is the
+ * single highest-leverage SEO addition here, because the queries this site can
+ * realistically win — "CLOT-LESS", "thrombolysis microgravity", team members by
+ * name — are entity queries, and entities are exactly what this markup declares.
+ */
+const team = (await getCollection('team')).sort((a, b) => a.data.order - b.data.order);
+const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft));
+
+const origin = Astro.site?.origin ?? 'https://clotless.ca';
+
+const graph = [
+  {
+    '@type': 'ResearchProject',
+    '@id': `${origin}/#project`,
+    name: 'Team CLOT-LESS',
+    alternateName: ['CLOT-LESS', 'CLOTLESS'],
+    url: origin,
+    logo: `${origin}/og-card.png`,
+    description: site.description,
+    parentOrganization: {
+      '@type': 'Organization',
+      name: 'University of British Columbia',
+      url: 'https://www.ubc.ca/',
+    },
+    member: team.map((m) => ({
+      '@type': 'Person',
+      name: m.data.name,
+      jobTitle: m.data.role,
+      affiliation: { '@type': 'Organization', name: m.data.affiliation },
+    })),
+    funder: sponsors.map((s) => ({
+      '@type': 'Organization',
+      name: s.data.name,
+      ...(s.data.url ? { url: s.data.url } : {}),
+    })),
+    // The experiment itself, so the science is a first-class entity.
+    subjectOf: {
+      '@type': 'ScholarlyArticle',
+      name: 'Thrombolytic Pharmacodynamics in Microgravity: Implications for Autonomous Medical Care in Deep Space',
+      identifier: 'IAC-26,A1,3,9,x113307',
+      datePublished: '2026-10-06',
+      publisher: { '@type': 'Organization', name: 'International Astronautical Federation' },
+    },
+  },
+  {
+    '@type': 'WebSite',
+    '@id': `${origin}/#website`,
+    url: origin,
+    name: `${site.team} — ${site.experiment}`,
+    inLanguage: 'en-CA',
+    publisher: { '@id': `${origin}/#project` },
+  },
+];
+---
+
+<script
+  type="application/ld+json"
+  is:inline
+  set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })}
+/>

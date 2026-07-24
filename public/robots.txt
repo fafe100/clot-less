@@ -1,0 +1,7 @@
+# Team CLOT-LESS — clotless.ca
+# Everything here is public; nothing is disallowed.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://clotless.ca/sitemap-index.xml

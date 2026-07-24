@@ -4,7 +4,7 @@ credentials: MD, MASc, P.Eng
 affiliation: University of Toronto — Department of Anesthesia and Pain Medicine
 position: First-year anesthesia resident
 role: Mission Specialist
-order: 4
+order: 5
 featured: true
 responsibilities:
   - Oversees the engineering side of the project
