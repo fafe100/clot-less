@@ -108,14 +108,20 @@
 
 /* Grain. Highest ratio of perceived quality to effort in the whole project:
    it kills gradient banding across the large navy field and removes the
-   "plastic" look that flat dark backgrounds otherwise have. */
+   "plastic" look that flat dark backgrounds otherwise have.
+
+   No mix-blend-mode. On a fixed layer over scrolling content, a blend mode
+   forces the browser to re-read the backdrop and recompute the blend on every
+   scroll frame — a real per-frame cost. A plain alpha layer composites once and
+   is cheaply re-used. On this near-black navy field the visual difference is
+   negligible: overlay of low-alpha noise mostly lightens midtones, which plain
+   white-ish noise at slightly higher alpha does too. */
 .grain {
   position: fixed;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  opacity: 0.032;
-  mix-blend-mode: overlay;
+  opacity: 0.06;
   contain: strict;
 }
 

@@ -11,6 +11,12 @@
    whether JS is disabled, blocked, or throws, the page ends up readable.
    Implementations that default to opacity:0 in plain CSS hide their content
    permanently the first time a script fails. */
+/* No will-change here on purpose. It was promoting every below-the-fold reveal
+   to its own compositor layer and holding it there until it scrolled into view
+   — on a long page that is a dozen-plus persistent layers the GPU recomposites
+   on every scroll frame, which is the opposite of what will-change is for. The
+   opacity+transform transition runs perfectly well without the hint; the layer
+   is created for the ~480ms it animates and discarded after. */
 .js-reveal .reveal {
   opacity: 0;
   transform: translate3d(0, 16px, 0);
@@ -18,13 +24,11 @@
     opacity var(--dur-slow) var(--ease-decel),
     transform var(--dur-slow) var(--ease-decel);
   transition-delay: var(--reveal-delay, 0ms);
-  will-change: opacity, transform;
 }
 
 .js-reveal .reveal.is-visible {
   opacity: 1;
   transform: translate3d(0, 0, 0);
-  will-change: auto;
 }
 
 /* ── Ambient emblem motion ──────────────────────────────────────────────── */
