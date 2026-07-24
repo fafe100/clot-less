@@ -21,11 +21,11 @@
 .section {
   position: relative;
   z-index: var(--z-content);
-  padding-block: var(--space-12);
+  padding-block: var(--space-8);
 }
 
 .section--tight {
-  padding-block: var(--space-10);
+  padding-block: var(--space-6);
 }
 
 .grid-auto {
@@ -121,7 +121,7 @@
 
 /* ── Page header block ──────────────────────────────────────────────────── */
 .page-head {
-  padding-block: calc(var(--nav-h) + var(--space-12)) var(--space-8);
+  padding-block: calc(var(--nav-h) + var(--space-6)) var(--space-4);
 }
 
 .center {

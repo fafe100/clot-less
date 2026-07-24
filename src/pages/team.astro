@@ -86,8 +86,14 @@ const GROUPS = [
   .team__hero-img {
     width: 100%;
     height: auto;
-    max-height: 62svh;
+    max-height: 54svh;
     object-fit: cover;
+    /* The photo is 4:3 and the frame is much wider, so `cover` discards about a
+       third of the height. Centred, that crop starts around 17% down — right
+       through everyone's heads, which sit between 5% and 25%. Biasing the crop
+       to 10% keeps a sliver of sky above the tallest head and drops the excess
+       off the bottom instead, where there is only foreground. */
+    object-position: center 10%;
     /* Nesting law: --r-2xl (44) − 8px padding = 36 ≈ --r-xl. */
     border-radius: var(--r-xl);
   }

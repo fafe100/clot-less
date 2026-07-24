@@ -55,9 +55,9 @@ const flipped = index % 2 === 1;
 <style>
   .sub {
     display: grid;
-    gap: var(--space-8);
+    gap: var(--space-6);
     align-items: start;
-    padding-block: var(--space-10);
+    padding-block: var(--space-8);
     border-block-start: 1px solid var(--border-hairline);
   }
 
@@ -106,8 +106,8 @@ const flipped = index % 2 === 1;
   @media (width >= 900px) {
     .sub {
       grid-template-columns: 1fr 1fr;
-      gap: var(--space-10);
-      padding-block: var(--space-12);
+      gap: var(--space-8);
+      padding-block: var(--space-10);
     }
 
     .sub--flipped .sub__copy {
