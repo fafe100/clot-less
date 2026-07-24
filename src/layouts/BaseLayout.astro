@@ -1,5 +1,4 @@
 ---
-import { ClientRouter } from 'astro:transitions';
 import { site } from '../data/site';
 import { link } from '../lib/link';
 import Aurora from '../components/Aurora.astro';
@@ -55,8 +54,6 @@ const ogImage = new URL('/og-card.png', Astro.site);
         the audience, funders and search intent are Canadian. */}
     <meta property="og:locale" content="en_CA" />
     <StructuredData />
-
-    <ClientRouter />
 
     {/*
       Runs before first paint. Two jobs:
@@ -118,39 +115,15 @@ const ogImage = new URL('/og-card.png', Astro.site);
       import { initReveal } from '../scripts/reveal';
       import { initTransparencyToggle } from '../scripts/transparency';
 
-      const boot = () => {
-        initNav();
-        initReveal();
-        initTransparencyToggle();
-      };
-
-      boot();
-      // View transitions swap the DOM without a reload, so re-bind each time.
-      document.addEventListener('astro:after-swap', boot);
+      // Plain multi-page navigation: each page is a fresh document load, so
+      // this module runs once per page and boots directly. No view-transition
+      // re-binding — that machinery was adding 2–3s to every page change, and
+      // static navigation to these pre-rendered pages paints in ~150ms instead.
+      // Prefetch keeps each page's HTML warm in cache, so the browser's own
+      // navigation is effectively instant.
+      initNav();
+      initReveal();
+      initTransparencyToggle();
     </script>
-
-    <style is:global>
-      /* Cross-fade + rise on navigation — the single biggest contributor to the
-         site feeling like an app rather than a sequence of documents.
-         No @view-transition rule here: that is the cross-document API, and
-         <ClientRouter /> intercepts navigation to use the same-document one.
-         Reduced motion is handled by Astro's own viewtransitions.css, which
-         already sets `animation: none !important` on these pseudo-elements. */
-      ::view-transition-old(root) {
-        animation: vt-out var(--dur-fast) var(--ease-out) both;
-      }
-
-      ::view-transition-new(root) {
-        animation: vt-in var(--dur-base) var(--ease-decel) both;
-      }
-
-      @keyframes vt-out {
-        to { opacity: 0; transform: translateY(-6px); }
-      }
-
-      @keyframes vt-in {
-        from { opacity: 0; transform: translateY(8px); }
-      }
-    </style>
   </body>
 </html>

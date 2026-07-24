@@ -99,13 +99,9 @@ const sessionCount = new Set(
 <script>
   import { initLightbox, initGalleryFilter } from '../scripts/lightbox';
 
-  const boot = () => {
-    initLightbox();
-    initGalleryFilter();
-  };
-
-  boot();
-  document.addEventListener('astro:after-swap', boot);
+  // Runs once per page load — no view-transition re-binding.
+  initLightbox();
+  initGalleryFilter();
 </script>
 
 <style>
