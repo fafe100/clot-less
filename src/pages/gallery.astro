@@ -4,6 +4,7 @@ import PageLayout from '../layouts/PageLayout.astro';
 import GalleryGrid from '../components/GalleryGrid.astro';
 import type { GalleryItem } from '../components/GalleryGrid.astro';
 import Lightbox from '../components/Lightbox.astro';
+import Reveal from '../components/Reveal.astro';
 import { GALLERY_IMAGES, getGalleryThumb } from '../lib/images';
 
 /**
@@ -60,27 +61,35 @@ const sessionCount = new Set(
 >
   <section class="section section--tight">
     <div class="shell">
-      <div class="gallery__bar" data-gallery-filter role="group" aria-label="Filter photos by category">
-        {categories.map((c) => (
-          <button
-            class:list={[c.id === 'all' && 'is-active']}
-            type="button"
-            data-category={c.id}
-            aria-pressed={c.id === 'all' ? 'true' : 'false'}
-          >
-            {c.label}
-          </button>
-        ))}
-      </div>
+      {/* Reveal the bar and the grid as blocks rather than per tile: a gallery
+          cell can be `hidden` by the category filter, and a hidden element is
+          never seen by the reveal observer, so it would stay at opacity 0 when
+          filtered back in. Animating the container sidesteps that entirely. */}
+      <Reveal>
+        <div class="gallery__bar" data-gallery-filter role="group" aria-label="Filter photos by category">
+          {categories.map((c) => (
+            <button
+              class:list={[c.id === 'all' && 'is-active']}
+              type="button"
+              data-category={c.id}
+              aria-pressed={c.id === 'all' ? 'true' : 'false'}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
 
-      {/* Live region so filtering isn't a silent change for screen readers —
-          the count is updated by initGalleryFilter. */}
-      <p class="t-caption gallery__count" data-gallery-count aria-live="polite">
-        {items.length} photograph{items.length === 1 ? '' : 's'} · {sessionCount} build
-        session{sessionCount === 1 ? '' : 's'}
-      </p>
+        {/* Live region so filtering isn't a silent change for screen readers —
+            the count is updated by initGalleryFilter. */}
+        <p class="t-caption gallery__count" data-gallery-count aria-live="polite">
+          {items.length} photograph{items.length === 1 ? '' : 's'} · {sessionCount} build
+          session{sessionCount === 1 ? '' : 's'}
+        </p>
+      </Reveal>
 
-      <GalleryGrid items={items} />
+      <Reveal index={1}>
+        <GalleryGrid items={items} />
+      </Reveal>
     </div>
   </section>
 
