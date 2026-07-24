@@ -15,6 +15,7 @@ declare global {
 }
 
 let observer: IntersectionObserver | null = null;
+let firstRun = true;
 
 export function initReveal(): void {
   // This module is now in charge of the hidden state, so cancel the inline
@@ -35,6 +36,14 @@ export function initReveal(): void {
     return;
   }
 
+  // On the first page load the whole viewport fades in — a deliberate first
+  // impression. But on client-side navigations that same fade makes every page
+  // change feel slow: you land and wait ~half a second for the content you
+  // navigated to. So after a swap, anything already on screen is shown
+  // instantly, and only content below the fold is left to fade in on scroll.
+  const revealNow = !firstRun;
+  firstRun = false;
+
   observer = new IntersectionObserver(
     (entries, obs) => {
       entries.forEach((entry) => {
@@ -48,6 +57,10 @@ export function initReveal(): void {
 
   items.forEach((el) => {
     if (el.classList.contains('is-visible')) return;
+    if (revealNow && el.getBoundingClientRect().top < window.innerHeight) {
+      el.classList.add('is-visible');
+      return;
+    }
     observer!.observe(el);
   });
 }
