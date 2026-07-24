@@ -74,8 +74,8 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
                   <Image
                     src={logo}
                     alt={`${entry.data.name} logo`}
-                    width={280}
-                    height={130}
+                    width={380}
+                    height={170}
                     densities={[1, 2]}
                     loading="eager"
                     decoding="async"
@@ -378,8 +378,8 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
      Columbian) are height-bound, which keeps them optically even. */
   .sponsor-rail img {
     width: auto;
-    max-width: clamp(84px, 9.5vw, 132px);
-    max-height: clamp(28px, 3.2vw, 44px);
+    max-width: clamp(110px, 12.5vw, 178px);
+    max-height: clamp(38px, 4.2vw, 60px);
     object-fit: contain;
     filter: brightness(0) invert(1);
     opacity: 0.5;
