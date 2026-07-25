@@ -112,8 +112,13 @@ a:hover {
   border: 0;
 }
 
+/* Fixed to the viewport and hidden by CLIPPING, not by parking it above the
+   page. The old translateY(-100%) trick left the button physically above the
+   top edge, which rubber-band overscroll then revealed. Clipping renders zero
+   visible pixels regardless of scroll position, so it can never peek — and a
+   keyboard user still gets it the instant they Tab to it. */
 .skip-link {
-  position: absolute;
+  position: fixed;
   top: var(--space-3);
   left: var(--space-3);
   z-index: calc(var(--z-modal) + 1);
@@ -123,10 +128,12 @@ a:hover {
   color: var(--text-on-accent);
   background-color: var(--accent);
   border-radius: var(--r-sm);
-  transform: translateY(calc(-100% - var(--space-4)));
-  transition: transform var(--dur-fast) var(--ease-out);
+  clip-path: inset(50%);
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease-out);
 }
 
 .skip-link:focus {
-  transform: translateY(0);
+  clip-path: none;
+  opacity: 1;
 }
