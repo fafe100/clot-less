@@ -141,8 +141,10 @@
   }
 }
 
-/* 2. OS-level preference. Progressive — this query is NOT Baseline, which is
-      exactly why the manual toggle below is mandatory rather than optional. */
+/* 2. OS-level preference. Honoured automatically for anyone whose system asks
+      to reduce transparency — no control needed. (The query is not yet Baseline
+      across browsers, so it is a progressive enhancement rather than guaranteed
+      everywhere.) */
 @media (prefers-reduced-transparency: reduce) {
   .glass,
   .glass--blur {
@@ -162,26 +164,7 @@
   }
 }
 
-/* 3. Manual override — the reliable path. Applied pre-paint by an inline
-      script in <head> so there is no flash. */
-:root[data-transparency="reduce"] .glass,
-:root[data-transparency="reduce"] .glass--blur {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  background-color: var(--surface-raised);
-  background-image: none;
-}
-
-:root[data-transparency="reduce"] .glass::before {
-  background: var(--border-soft);
-}
-
-:root[data-transparency="reduce"] .grain,
-:root[data-transparency="reduce"] .aurora {
-  display: none;
-}
-
-/* 4. Windows High Contrast / forced colours. */
+/* 3. Windows High Contrast / forced colours. */
 @media (forced-colors: active) {
   .glass,
   .glass--blur {

@@ -25,12 +25,9 @@ const year = new Date().getFullYear();
     </nav>
 
     <div class="foot__meta">
-      <a class="foot__contact" href={`mailto:${site.contact}`}>{site.contact}</a>
-      {/* Mandatory: prefers-reduced-transparency is not widely supported, so
-          the media query alone cannot satisfy the requirement. */}
-      <button class="foot__a11y" type="button" data-transparency-toggle aria-pressed="false">
-        Reduce transparency
-      </button>
+      {site.contacts.map((email) => (
+        <a class="foot__contact" href={`mailto:${email}`}>{email}</a>
+      ))}
     </div>
   </div>
 
@@ -102,21 +99,6 @@ const year = new Date().getFullYear();
     font-size: var(--t-small);
     color: var(--accent);
     text-decoration: none;
-  }
-
-  .foot__a11y {
-    padding: 0.4rem 0.85rem;
-    font-size: var(--t-caption);
-    font-weight: 500;
-    color: var(--text-tertiary);
-    border-radius: var(--r-pill);
-    background-color: rgb(255 255 255 / 0.05);
-    box-shadow: inset 0 0 0 1px var(--border-hairline);
-    transition: color var(--dur-fast) var(--ease-out);
-  }
-
-  .foot__a11y:hover {
-    color: var(--text-primary);
   }
 
   .foot__legal {

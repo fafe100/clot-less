@@ -56,30 +56,20 @@ const ogImage = new URL('/og-card.png', Astro.site);
     <StructuredData />
 
     {/*
-      Runs before first paint. Two jobs:
+      Runs before first paint. Adds .js-reveal, which gates the reveal
+      animation's hidden state, AND arms a failsafe that strips it again if the
+      reveal module never runs.
 
-      1. Apply the stored reduce-transparency preference so the glass never
-         flashes translucent before switching to opaque.
-
-      2. Add .js-reveal, which gates the reveal animation's hidden state, AND
-         arm a failsafe that strips it again if the reveal module never runs.
-
-         The failsafe is the important part. "JS disabled" is the easy case —
-         this script never runs, the class never lands, everything is visible.
-         The dangerous case is this inline script succeeding while the module
-         bundle does not: a partial deploy, a blocked request, or a throw in
-         any earlier init. Without the timeout, .js-reveal would survive with
-         nothing left to clear it and every page would sit at opacity 0
-         forever. reveal.ts cancels the timer as soon as it takes over.
+      The failsafe is the important part. "JS disabled" is the easy case — this
+      script never runs, the class never lands, everything is visible. The
+      dangerous case is this inline script succeeding while the module bundle
+      does not: a partial deploy, a blocked request, or a throw in any earlier
+      init. Without the timeout, .js-reveal would survive with nothing left to
+      clear it and every page would sit at opacity 0 forever. reveal.ts cancels
+      the timer as soon as it takes over.
     */}
     <script is:inline>
       (() => {
-        try {
-          if (localStorage.getItem('clotless:transparency') === 'reduce') {
-            document.documentElement.dataset.transparency = 'reduce';
-          }
-        } catch (_) {}
-
         const root = document.documentElement;
         root.classList.add('js-reveal');
         window.__revealFailsafe = setTimeout(() => {
@@ -113,7 +103,6 @@ const ogImage = new URL('/og-card.png', Astro.site);
     <script>
       import { initNav } from '../scripts/nav';
       import { initReveal } from '../scripts/reveal';
-      import { initTransparencyToggle } from '../scripts/transparency';
 
       // Plain multi-page navigation: each page is a fresh document load, so
       // this module runs once per page and boots directly. No view-transition
@@ -123,7 +112,6 @@ const ogImage = new URL('/og-card.png', Astro.site);
       // navigation is effectively instant.
       initNav();
       initReveal();
-      initTransparencyToggle();
     </script>
   </body>
 </html>

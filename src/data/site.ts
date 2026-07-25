@@ -11,7 +11,10 @@ export const site = {
   tagline: 'Thrombolysis has never been tested in microgravity.',
   description:
     'Team CLOT-LESS is flying the first in-vitro study of thrombolysis kinetics in reduced gravity on the Canadian Space Agency’s CAN-RGX parabolic flight campaign.',
+  // Primary contact — used for the "Get in touch" call to action.
   contact: 'atabari@student.ubc.ca',
+  // All addresses shown in the footer. Add or remove a line here.
+  contacts: ['atabari@student.ubc.ca', 'fafe@student.ubc.ca'],
 } as const;
 
 export const nav = [
