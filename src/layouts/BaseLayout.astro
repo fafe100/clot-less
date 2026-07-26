@@ -34,6 +34,9 @@ const ogImage = new URL('/og-card.png', Astro.site);
     <meta name="description" content={description} />
     <meta name="theme-color" content="#0A143C" />
     <link rel="icon" href={link('/favicon.svg')} type="image/svg+xml" />
+    {site.googleSiteVerification && (
+      <meta name="google-site-verification" content={site.googleSiteVerification} />
+    )}
     <link rel="canonical" href={canonical} />
 
     <meta property="og:type" content="website" />

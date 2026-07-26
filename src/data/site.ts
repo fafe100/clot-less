@@ -15,6 +15,10 @@ export const site = {
   contact: 'atabari@student.ubc.ca',
   // All addresses shown in the footer. Add or remove a line here.
   contacts: ['atabari@student.ubc.ca', 'fafe@student.ubc.ca'],
+  // Google Search Console ownership token. Paste the value from the "HTML tag"
+  // verification method here (the content="..." string), then verify in the
+  // console. Leave empty to render no tag.
+  googleSiteVerification: '',
 } as const;
 
 export const nav = [
