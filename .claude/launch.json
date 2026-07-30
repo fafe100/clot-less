@@ -6,6 +6,20 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
       "port": 4321
+    },
+    {
+      "name": "farshad-site",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "--prefix",
+        "/Users/farshadfelfelian/GitHub/farshadfelfelian.com",
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "4325"
+      ],
+      "port": 4325
     }
   ]
 }

@@ -135,8 +135,10 @@ So `.glass` gives the fill, specular ring and shadows with **no** blur, and
 **Do not add a fourth without checking the DevTools Layers panel.** Putting
 `--blur` on a card grid is the single easiest way to wreck scroll performance.
 
-On touch devices the nav drops real blur entirely (`@media (hover: none)`),
-because iOS Safari repaints a fixed blurred element on every scroll frame.
+On **iOS** the nav drops real blur (opaque fill instead), because iOS Safari
+repaints a fixed blurred element on every scroll frame. This is scoped to iOS
+only via `@supports (-webkit-touch-callout: none)` — Android and desktop
+composite fixed `backdrop-filter` fine and keep the glass look.
 
 ### Text over photos
 

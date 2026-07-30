@@ -189,14 +189,19 @@ const pathname = Astro.url.pathname;
     .nav__toggle { display: grid; }
   }
 
-  /* iOS Safari repaints a fixed blurred element on every scroll frame. On
-     touch devices drop the real blur entirely and use the opaque fill — this
-     is the single most important performance mitigation on the site. */
-  @media (hover: none) and (pointer: coarse) {
-    .nav__pill {
-      -webkit-backdrop-filter: none;
-      backdrop-filter: none;
-      background-color: var(--glass-fill-solid);
+  /* iOS Safari repaints a fixed blurred element on every scroll frame, so the
+     nav blur is dropped there. But this must target iOS ONLY — Android (Firefox,
+     Chrome) composites fixed backdrop-filter fine and was needlessly losing the
+     glass look. `-webkit-touch-callout` exists solely in WebKit/iOS, so this
+     @supports block matches iPhone/iPad and nothing else; the media query then
+     narrows it to touch, leaving desktop Safari untouched. */
+  @supports (-webkit-touch-callout: none) {
+    @media (hover: none) and (pointer: coarse) {
+      .nav__pill {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        background-color: var(--glass-fill-solid);
+      }
     }
   }
 </style>
