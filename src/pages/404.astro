@@ -1,0 +1,71 @@
+---
+/**
+ * Astro emits this as dist/404.html, which Netlify serves for any unmatched
+ * path automatically — no redirect rule needed. It matters more than usual
+ * here: public/_redirects funnels every canrgx.ca path onto clotless.ca, so a
+ * stale or mistyped link on the old domain lands on this page rather than the
+ * host's blank default error.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { link } from '../lib/link';
+---
+
+<BaseLayout
+  title="Page not found"
+  description="That page does not exist on the Team CLOT-LESS site."
+>
+  <section class="section lost">
+    <div class="shell lost__inner">
+      <p class="t-eyebrow enter">404</p>
+
+      <h1 class="t-display lost__title enter" style="--enter-delay:80ms">
+        Lost in microgravity
+      </h1>
+
+      <p class="t-lede lost__lede enter" style="--enter-delay:160ms">
+        That page has drifted off. Everything else is exactly where you left it.
+      </p>
+
+      <div class="lost__actions enter" style="--enter-delay:240ms">
+        <a class="btn btn--primary" href={link('/')}>Back to home</a>
+        <a class="btn btn--ghost" href={link('/design')}>Explore the design</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .lost {
+    display: grid;
+    place-items: center;
+    /* Clears the fixed nav, and centres the block on a tall screen without
+       committing to 100svh — a short laptop should not have to scroll for a
+       page whose whole job is two links. */
+    min-height: 76svh;
+    padding-block: calc(var(--nav-h) + var(--space-8)) var(--space-8);
+  }
+
+  .lost__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    text-align: center;
+  }
+
+  .lost__title {
+    max-width: 14ch;
+  }
+
+  .lost__lede {
+    max-width: 42ch;
+  }
+
+  .lost__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+    margin-block-start: var(--space-3);
+  }
+</style>
