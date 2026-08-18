@@ -29,6 +29,7 @@ export function initNav(): void {
 
   const main = document.querySelector<HTMLElement>('#main');
   const footer = document.querySelector<HTMLElement>('footer');
+  const close = menu.querySelector<HTMLButtonElement>('[data-menu-close]');
 
   const setOpen = (open: boolean) => {
     toggle.setAttribute('aria-expanded', String(open));
@@ -42,17 +43,29 @@ export function initNav(): void {
     main?.toggleAttribute('inert', open);
     footer?.toggleAttribute('inert', open);
 
-    if (open) {
-      menu.querySelector<HTMLAnchorElement>('a')?.focus();
-    }
+    /* Focus lands on the close button rather than the first link. The burger
+       that opened the menu is outside this dialog and aria-modal hides it, so
+       the exit is what a screen-reader user needs within reach first. */
+    if (open) close?.focus();
   };
 
   toggle.addEventListener('click', () =>
     setOpen(toggle.getAttribute('aria-expanded') !== 'true'),
   );
 
+  close?.addEventListener('click', () => {
+    setOpen(false);
+    toggle.focus();
+  });
+
+  /* A tap on a link, or on the scrim around the sheet, dismisses it. The scrim
+     case is bound to `click` and not `pointerdown`: the sheet scrolls when it
+     is taller than the viewport, and the natural way to scroll it is a drag
+     that begins on the scrim — on pointerdown that closed the menu the instant
+     the finger touched down. */
   menu.addEventListener('click', (e) => {
-    if ((e.target as HTMLElement).closest('a')) setOpen(false);
+    const target = e.target as HTMLElement;
+    if (target === menu || target.closest('a')) setOpen(false);
   });
 
   document.addEventListener('keydown', (e) => {
@@ -62,10 +75,13 @@ export function initNav(): void {
     }
   });
 
-  // Tapping the scrim closes it. Without this the only exits are a nav link or
-  // the Escape key, and a touch user has neither instinct nor a keyboard.
-  menu.addEventListener('pointerdown', (e) => {
-    if (e.target === menu) setOpen(false);
+  /* Android's back gesture freezes the document into the bfcache exactly as it
+     stands. Come back to it with the menu open and the restored page has
+     `html { overflow: hidden }`, an inert <main> and a sheet nothing will
+     dismiss — a page that looks fine and does nothing. Restoring from the
+     bfcache re-runs no module, so this is the only hook there is. */
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) setOpen(false);
   });
 
   /* Crossing the desktop breakpoint while the menu is open used to strand the

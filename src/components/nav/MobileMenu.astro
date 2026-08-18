@@ -14,6 +14,18 @@ const pathname = Astro.url.pathname;
   aria-label="Site menu"
 >
   <div class="menu__sheet glass glass--blur">
+    {/* The exit has to live INSIDE the dialog. aria-modal="true" hides
+        everything outside this element from a screen reader, and the burger
+        that opened the menu is in the nav — outside. Without this button the
+        only remaining exits are a nav link or the Escape key, neither of which
+        is reachable for someone confined to the modal on a touch device. */}
+    <button class="menu__close" type="button" data-menu-close aria-label="Close menu">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round"/>
+      </svg>
+    </button>
+
     <ul class="menu__list" role="list">
       {nav.map((item, i) => {
         const current = isCurrent(link(item.href), pathname);
@@ -37,6 +49,10 @@ const pathname = Astro.url.pathname;
 </div>
 
 <style>
+  /* Scrollable, because the sheet does not always fit. Six links plus the close
+     control need ~509px; a phone in landscape has 360-393px of viewport. The
+     page behind is locked (`html { overflow: hidden }`) while the menu is open,
+     so without this the last two links were physically unreachable. */
   .menu {
     position: fixed;
     inset: 0;
@@ -44,6 +60,10 @@ const pathname = Astro.url.pathname;
     display: none;
     padding: calc(var(--nav-h) + var(--space-5)) var(--gutter) var(--space-6);
     background-color: rgb(0 10 30 / 0.55);
+    overflow-y: auto;
+    /* Keeps a flick at either end of the sheet from chaining to the document. */
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
   }
 
   .menu[data-open] {
@@ -54,6 +74,25 @@ const pathname = Astro.url.pathname;
   .menu__sheet {
     padding: var(--space-3);
     border-radius: var(--r-xl);
+  }
+
+  .menu__close {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    /* Pushed to the trailing edge; the list below it stays full width. */
+    margin-inline-start: auto;
+    margin-block-end: var(--space-2);
+    border-radius: 50%;
+    color: var(--text-secondary);
+    background-color: rgb(255 255 255 / 0.06);
+    box-shadow: inset 0 0 0 1px var(--border-hairline);
+    transition: background-color var(--dur-fast) var(--ease-out);
+  }
+
+  .menu__close:active {
+    background-color: rgb(255 255 255 / 0.11);
   }
 
   .menu__list {
