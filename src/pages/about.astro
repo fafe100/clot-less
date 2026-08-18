@@ -173,7 +173,7 @@ const timeline = (await getCollection('timeline')).sort((a, b) => a.data.order -
     gap: var(--space-5);
   }
 
-  @media (width >= 940px) {
+  @media (min-width: 940px) {
     .about__grid {
       grid-template-columns: 1.35fr 1fr;
       gap: var(--space-10);
@@ -242,7 +242,7 @@ const timeline = (await getCollection('timeline')).sort((a, b) => a.data.order -
     gap: var(--space-5);
   }
 
-  @media (width >= 880px) {
+  @media (min-width: 880px) {
     .about__outreach {
       grid-template-columns: 1fr 1fr;
     }

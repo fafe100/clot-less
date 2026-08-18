@@ -23,7 +23,7 @@ const team = (await getCollection('team')).sort((a, b) => a.data.order - b.data.
             src={groupPhoto}
             alt="Four members of Team CLOT-LESS standing together outdoors at sunset, with the ocean and mountains behind them."
             widths={[720, 1200, 2000]}
-            sizes="(width < 1180px) 92vw, 1100px"
+            sizes="(max-width: 1179.98px) 92vw, 1100px"
             loading="eager"
             fetchpriority="high"
             decoding="async"
@@ -63,13 +63,13 @@ const team = (await getCollection('team')).sort((a, b) => a.data.order - b.data.
     list-style: none;
   }
 
-  @media (width >= 620px) {
+  @media (min-width: 620px) {
     .team-grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
 
-  @media (width >= 940px) {
+  @media (min-width: 940px) {
     .team-grid {
       grid-template-columns: repeat(3, 1fr);
     }

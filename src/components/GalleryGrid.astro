@@ -54,7 +54,7 @@ const fulls = await Promise.all(
           src={item.thumb}
           alt={item.alt}
           widths={[380, 760]}
-          sizes="(width < 640px) 92vw, (width < 1024px) 46vw, 30vw"
+          sizes="(max-width: 639.98px) 92vw, (max-width: 1023.98px) 46vw, 30vw"
           loading={i < 4 ? 'eager' : 'lazy'}
           decoding="async"
           class="gal__img"
@@ -93,7 +93,7 @@ const fulls = await Promise.all(
   .span-1x2 { grid-row: span 2; }
   .span-2x2 { grid-column: span 2; grid-row: span 2; }
 
-  @media (width < 640px) {
+  @media (max-width: 639.98px) {
     .gal {
       grid-template-columns: 1fr;
       grid-auto-rows: 240px;

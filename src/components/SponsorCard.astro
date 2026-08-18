@@ -24,14 +24,17 @@ const { Content } = await render(entry);
     keeps every logo in its own brand colours, which is what brand guidelines
     generally require.
   */}
+  {/* Same rule as the home-page rail: `widths` is clamped to the source width,
+      `densities` is not, and the declared height was a fixed ratio none of
+      these marks actually have. */}
   <div class="sponsor__plate">
     {logo ? (
       <Image
         src={logo}
         alt={`${data.name} logo`}
-        width={420}
-        height={200}
-        densities={[1, 2]}
+        width={300}
+        widths={[300, 600]}
+        sizes="(max-width: 639.98px) 60vw, 300px"
         loading="lazy"
         decoding="async"
         class="sponsor__logo"

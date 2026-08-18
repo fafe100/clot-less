@@ -36,7 +36,7 @@ const flipped = index % 2 === 1;
           src={data.hero}
           alt={data.heroAlt ?? `${data.title} — CAD render`}
           widths={[480, 900]}
-          sizes="(width < 900px) 92vw, 520px"
+          sizes="(max-width: 899.98px) 92vw, 520px"
           loading="lazy"
           decoding="async"
           class="sub__img"
@@ -103,7 +103,7 @@ const flipped = index % 2 === 1;
     padding: var(--space-5) var(--space-5) calc(var(--space-5) + 4px);
   }
 
-  @media (width >= 900px) {
+  @media (min-width: 900px) {
     .sub {
       grid-template-columns: 1fr 1fr;
       gap: var(--space-8);

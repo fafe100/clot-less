@@ -89,7 +89,7 @@ export function initNav(): void {
      `aria-expanded` stayed true and `html { overflow: hidden }` stayed applied,
      leaving the page unscrollable with no visible control to undo it. Rotating
      a phone to landscape was enough to trigger it. */
-  const desktop = window.matchMedia('(width >= 860px)');
+  const desktop = window.matchMedia('(min-width: 860px)');
   desktop.addEventListener('change', (e) => {
     if (e.matches) setOpen(false);
   });

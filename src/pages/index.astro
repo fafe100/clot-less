@@ -71,12 +71,20 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
               const logo = getSponsorLogo(entry.id);
               return logo ? (
                 <li>
+                  {/* `widths`, never `densities`. Astro clamps a widths list to
+                      the source's own width but multiplies a densities list
+                      blindly, so [1,2] off a 380px base was emitting 760px
+                      renditions of logos whose originals are 300-450px wide —
+                      upscaled, softer and several times heavier than the file
+                      they came from. No `height` either: the pair 380x170 was a
+                      made-up ratio, and the browser reserved that box until the
+                      image landed and snapped it to the real one. */}
                   <Image
                     src={logo}
                     alt={`${entry.data.name} logo`}
-                    width={380}
-                    height={170}
-                    densities={[1, 2]}
+                    width={190}
+                    widths={[190, 380]}
+                    sizes="(max-width: 879.98px) 110px, 178px"
                     loading="eager"
                     decoding="async"
                   />
@@ -214,7 +222,7 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
   /* Side-by-side above the breakpoint. A centred stack pushes the primary
      actions below the fold on a 720px-tall laptop; this keeps the whole hero
      — emblem, headline and both CTAs — visible on first paint. */
-  @media (width >= 900px) {
+  @media (min-width: 900px) {
     .hero {
       text-align: start;
     }
@@ -302,7 +310,7 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
      laptop widths. `safe center` falls back to start-alignment the moment the
      content overflows, and browsers without support ignore it entirely, which
      is the same safe outcome. */
-  @media (width >= 1180px) {
+  @media (min-width: 1180px) {
     .team-strip {
       justify-content: safe center;
       padding-inline: var(--gutter);
@@ -318,7 +326,7 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
 
      !important is required because Emblem sets --emblem-size inline from its
      `size` prop, and an inline custom property otherwise wins. */
-  @media (height <= 840px) {
+  @media (max-height: 840px) {
     .hero {
       padding-block: calc(var(--nav-h) + var(--space-3)) var(--space-3);
     }
