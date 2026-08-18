@@ -21,6 +21,29 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# Files served straight out of public/ have no content hash, so they cannot be
+# immutable — but they also almost never change, and without a Cache-Control
+# they are revalidated on every single view. A week is long enough to matter and
+# short enough that a replacement propagates without anyone chasing caches.
+#
+# Note these are separate rules rather than another Cache-Control on /*: Netlify
+# applies EVERY matching rule, and two rules setting the same header name on one
+# path is not a merge.
+[[headers]]
+  for = "/og-card.jpg"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/email-signature-logo.png"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/favicon.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
 [[headers]]
   for = "/*"
   [headers.values]

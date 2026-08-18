@@ -12,13 +12,21 @@ export default defineConfig({
   trailingSlash: 'ignore',
   integrations: [sitemap()],
   // Navigation is the browser's own, so the only cost it can carry is fetching
-  // the next document. `viewport` prefetches a link as soon as it is on screen;
-  // since the nav is always visible, all six pages are cached shortly after
-  // load and the fetch is already done by the time a link is clicked. Six small
-  // HTML docs is trivial bandwidth.
+  // the next document — and prefetch removes it.
+  //
+  // `hover` rather than `viewport`, because of what prefetched HTML does when a
+  // deploy lands mid-session. Chromium keeps a prefetched document usable for
+  // five minutes and serves it regardless of max-age, while the host purges the
+  // previous build's hashed assets the moment the new one goes live. Prefetch
+  // on viewport meant every page in the nav was captured seconds after load, so
+  // a visitor who then clicked anything got stale HTML pointing at CSS that now
+  // 404s. On hover the prefetch happens 100-300ms before the click instead of
+  // minutes, which is still ahead of the navigation and narrows that window to
+  // nothing. Touch devices have no hover and fall back to prefetching on
+  // touchstart, which is roughly the same head start.
   prefetch: {
     prefetchAll: true,
-    defaultStrategy: 'viewport',
+    defaultStrategy: 'hover',
   },
   build: {
     // 'directory' emits about/index.html, so `/about` resolves on any static
