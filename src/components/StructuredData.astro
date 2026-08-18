@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import { site } from '../data/site';
+import { link } from '../lib/link';
 
 /**
  * JSON-LD structured data.
@@ -12,18 +13,24 @@ import { site } from '../data/site';
  * name — are entity queries, and entities are exactly what this markup declares.
  */
 const team = (await getCollection('team')).sort((a, b) => a.data.order - b.data.order);
-const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft));
+const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
 
-const origin = Astro.site?.origin ?? 'https://clotless.ca';
+/* Absolute URLs, built through link() like every other path on the site, so a
+   move to a project-path host stays the one-line config change it is meant to
+   be rather than silently emitting URLs that 404. */
+const origin = Astro.site ?? new URL('https://clotless.ca');
+const abs = (path: string) => new URL(link(path), origin).href;
 
 const graph = [
   {
     '@type': 'ResearchProject',
-    '@id': `${origin}/#project`,
+    '@id': `${abs('/')}#project`,
     name: 'Team CLOT-LESS',
     alternateName: ['CLOT-LESS', 'CLOTLESS'],
-    url: origin,
-    logo: `${origin}/og-card.jpg`,
+    url: abs('/'),
+    logo: abs('/og-card.jpg'),
     description: site.description,
     parentOrganization: {
       '@type': 'Organization',
@@ -52,17 +59,21 @@ const graph = [
   },
   {
     '@type': 'WebSite',
-    '@id': `${origin}/#website`,
-    url: origin,
+    '@id': `${abs('/')}#website`,
+    url: abs('/'),
     name: `${site.team} — ${site.experiment}`,
     inLanguage: 'en-CA',
-    publisher: { '@id': `${origin}/#project` },
+    publisher: { '@id': `${abs('/')}#project` },
   },
 ];
+
+/* Every less-than is rewritten as its JSON unicode escape. That is still valid
+   JSON and parses back to exactly the same string, but it means no value in
+   this graph — a sponsor name, a paper title, anything editable from Markdown
+   — can close the script element it is embedded in or open an HTML comment
+   inside it. */
+const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })
+  .replace(/</g, '\\u003c');
 ---
 
-<script
-  type="application/ld+json"
-  is:inline
-  set:html={JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })}
-/>
+<script type="application/ld+json" is:inline set:html={json} />

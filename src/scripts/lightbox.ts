@@ -41,7 +41,13 @@ export function initLightbox(): void {
     index = (i + pool.length) % pool.length;
     const item = read(pool[index]!);
 
+    /* Dim while the next photo is on the wire. Without it the previous photo
+       sits under the next one's caption for as long as the fetch takes, which
+       reads as the caption being wrong rather than as loading. */
+    img.classList.add('is-loading');
     img.src = item.full;
+    // Re-showing the same photo never fires `load`, so clear it right back.
+    if (img.complete) img.classList.remove('is-loading');
     img.alt = item.alt;
     caption.textContent = item.caption;
     caption.hidden = item.caption === '';
@@ -52,6 +58,8 @@ export function initLightbox(): void {
     meta.hidden = item.caption === '' && item.phase === '';
     counter.textContent = `${index + 1} / ${pool.length}`;
   }
+
+  img.addEventListener('load', () => img.classList.remove('is-loading'));
 
   grid.addEventListener('click', (e) => {
     const trigger = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-lightbox-open]');
@@ -84,16 +92,35 @@ export function initLightbox(): void {
     lastFocused = null;
   });
 
-  // Swipe navigation.
+  /* Swipe navigation, with a pinch guard. A pinch-to-zoom almost never ends
+     with both fingers where they started, so the second finger's touchend was
+     routinely read as a 50px+ horizontal swipe and jumped to the next photo —
+     the moment someone tries to look closer at a build detail is exactly the
+     moment they lose it. Any gesture that ever had a second finger down is
+     ignored until every finger is back off the glass. */
   let startX = 0;
+  let multiTouch = false;
+
   dialog.addEventListener(
     'touchstart',
-    (e) => { startX = e.changedTouches[0]!.clientX; },
+    (e) => {
+      if (e.touches.length > 1) multiTouch = true;
+      if (multiTouch) return;
+      startX = e.changedTouches[0]!.clientX;
+    },
     { passive: true },
   );
+
   dialog.addEventListener(
     'touchend',
     (e) => {
+      // Still fingers on the screen: the gesture is not over.
+      if (e.touches.length > 0) return;
+
+      const pinched = multiTouch;
+      multiTouch = false;
+      if (pinched) return;
+
       const dx = e.changedTouches[0]!.clientX - startX;
       if (Math.abs(dx) > 50) show(dx < 0 ? index + 1 : index - 1);
     },
@@ -130,10 +157,15 @@ export function initGalleryFilter(): void {
     const count = document.querySelector<HTMLElement>('[data-gallery-count]');
     if (count) {
       const label = btn.textContent?.trim() ?? '';
+      const photos = `${shown} photograph${shown === 1 ? '' : 's'}`;
+      // The session tally is server-rendered into a data attribute, because
+      // filtering back to All was otherwise dropping it permanently — the
+      // suffix only holds for the unfiltered set, and only the server knows it.
+      const sessions = Number(count.dataset.sessions ?? '0');
       count.textContent =
         category === 'all'
-          ? `${shown} photograph${shown === 1 ? '' : 's'}`
-          : `${shown} photograph${shown === 1 ? '' : 's'} in ${label}`;
+          ? `${photos} · ${sessions} build session${sessions === 1 ? '' : 's'}`
+          : `${photos} in ${label}`;
     }
   });
 }

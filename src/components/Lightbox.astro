@@ -84,6 +84,12 @@
     height: auto;
     border-radius: var(--r-lg);
     box-shadow: var(--shadow-3);
+    transition: opacity var(--dur-fast) var(--ease-out);
+  }
+
+  /* Set by the script between one photo and the next landing. */
+  .lb__img.is-loading {
+    opacity: 0.4;
   }
 
   /* The caption sits outside the image, not over it. */
@@ -142,5 +148,25 @@
     .lb__ctl--next { inset-inline-end: 4px; }
     .lb__ctl--close { inset-block-start: -50px; inset-inline-end: 4px; }
     .lb__counter { inset-block-start: -46px; inset-inline-start: 4px; }
+  }
+
+  /* glass.css covers everything carrying a .glass class, but ::backdrop is a
+     pseudo-element on the dialog itself and no class can reach it — so the one
+     blurred surface on the page was the one surface still blurring for someone
+     who asked the OS not to. An opaque wash instead. */
+  @media (prefers-reduced-transparency: reduce) {
+    .lb::backdrop {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      background-color: rgb(0 10 30 / 0.95);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .lb::backdrop {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      background: Canvas;
+    }
   }
 </style>

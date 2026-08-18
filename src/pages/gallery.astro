@@ -81,7 +81,12 @@ const sessionCount = new Set(
 
         {/* Live region so filtering isn't a silent change for screen readers —
             the count is updated by initGalleryFilter. */}
-        <p class="t-caption gallery__count" data-gallery-count aria-live="polite">
+        <p
+          class="t-caption gallery__count"
+          data-gallery-count
+          data-sessions={sessionCount}
+          aria-live="polite"
+        >
           {items.length} photograph{items.length === 1 ? '' : 's'} · {sessionCount} build
           session{sessionCount === 1 ? '' : 's'}
         </p>

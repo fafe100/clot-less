@@ -84,7 +84,10 @@ const gallery = defineCollection({
     phase: z.string().optional(),
     date: z.coerce.date().optional(),
     span: z.enum(['1x1', '2x1', '1x2', '2x2']).default('1x1'),
-    order: z.number().default(0),
+    /* Optional, not defaulted. gallery.astro falls back to 999 so a photo with
+       no stated order sorts to the end; a default of 0 sent it to the front
+       instead, which is the opposite of what the page documents. */
+    order: z.number().optional(),
   }),
 });
 

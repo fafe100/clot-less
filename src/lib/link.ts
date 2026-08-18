@@ -12,6 +12,11 @@ export function link(path: string): string {
     return path;
   }
   const base = BASE.endsWith('/') ? BASE.slice(0, -1) : BASE;
+  // Idempotent: an already-prefixed path is returned untouched, so link() can
+  // be applied twice without producing /repo/repo/about.
+  if (base !== '' && (path === base || path.startsWith(`${base}/`))) {
+    return path;
+  }
   const rest = path.startsWith('/') ? path : `/${path}`;
   return `${base}${rest}`;
 }
@@ -19,14 +24,15 @@ export function link(path: string): string {
 /**
  * True when `href` is the current page — used for nav active state.
  *
- * Pass an href that has ALREADY been through `link()`. `Astro.url.pathname` is
- * base-prefixed, so comparing it against a raw '/about' silently returns false
- * on every page the moment a `base` is configured.
+ * Takes a RAW href ('/about') and base-prefixes it internally. `Astro.url.
+ * pathname` is base-prefixed, so comparing it against a raw path silently
+ * returns false on every page the moment a `base` is configured — a trap worth
+ * closing here rather than relying on every call site to remember link().
  */
 export function isCurrent(href: string, pathname: string): boolean {
   const normalise = (p: string) => {
     const stripped = p.replace(/\.html$/, '').replace(/\/+$/, '');
     return stripped === '' ? '/' : stripped;
   };
-  return normalise(href) === normalise(pathname);
+  return normalise(link(href)) === normalise(pathname);
 }

@@ -17,7 +17,7 @@ const pathname = Astro.url.pathname;
 
     <ul class="nav__links" role="list">
       {nav.map((item) => {
-        const current = isCurrent(link(item.href), pathname);
+        const current = isCurrent(item.href, pathname);
         return (
           <li>
             <a

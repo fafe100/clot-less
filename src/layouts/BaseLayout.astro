@@ -22,7 +22,7 @@ const fullTitle = title === site.name ? `${site.name} — ${site.experiment}` : 
    unfurlers. Both resolve against `site` in astro.config.mjs, so pointing the
    project at a different domain updates every page at once. */
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogImage = new URL('/og-card.jpg', Astro.site);
+const ogImage = new URL(link('/og-card.jpg'), Astro.site);
 ---
 
 <!doctype html>
