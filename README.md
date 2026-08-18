@@ -23,8 +23,20 @@ Then open <http://localhost:4321>. Edits to Markdown appear on save.
 | Command | What it does |
 | --- | --- |
 | `npm run dev` | Local dev server with hot reload |
-| `npm run build` | Type-checks, then builds to `dist/` |
+| `npm run build` | Type-checks, builds to `dist/`, then prunes and self-checks |
 | `npm run preview` | Serves the built site exactly as it will deploy |
+
+The last step of the build is `scripts/prune-originals.mjs`. It does two things:
+
+- **Prunes.** Astro copies the *original* of every imported image into
+  `dist/_astro/` next to the optimised renditions and leaves it there whether or
+  not anything points at it — currently 5 MB of full-size gallery JPEGs, CAD
+  renders and a draft sponsor's logo. Anything unreferenced by the emitted HTML,
+  CSS and JS is deleted, and the freed bytes are printed.
+- **Asserts.** The boot module is small enough that Vite inlines it into the
+  document rather than emitting a separate request. If that ever stops being
+  true the build fails loudly instead of quietly changing how the mobile menu
+  loads.
 
 > **If a style change doesn't appear**, Vite has cached it. Stop the server and
 > run `rm -rf node_modules/.vite .astro`, then `npm run dev`. This bites during
@@ -62,7 +74,7 @@ done — there is no `photo:` field to update, which is exactly the point.
 
 **A member with no photo automatically gets a monogram tile** — their initials on
 a gradient drawn from the emblem palette, in the same 4:5 box a photo would fill.
-The grid stays even whether you have zero photos or seven. Drop a real headshot in
+The grid stays even whether you have every headshot or none. Drop a real one in
 and it takes over with no other change.
 
 ### Gallery photos are drop-in
@@ -125,12 +137,14 @@ reads warm rather than alarming.
 Blurring a *flat* navy section produces a flat navy result — identical to a plain
 fill, for a real cost.
 
-So `.glass` gives the fill, specular ring and shadows with **no** blur, and
-`.glass--blur` is opt-in on exactly three elements:
+So `.glass` gives the fill, specular ring and shadows with **no** blur, and real
+blur exists on exactly three surfaces:
 
-1. The nav pill — content scrolls beneath it, so blur is the entire point
-2. The lightbox backdrop — static, one at a time, over a photo
-3. The mobile menu sheet — modal, mutually exclusive with the lightbox
+1. The nav pill — `.glass--blur`; content scrolls beneath it, so blur is the point
+2. The mobile menu sheet — `.glass--blur`; modal, mutually exclusive with the lightbox
+3. The lightbox `::backdrop` — static, one at a time, over a photo. A
+   pseudo-element takes no class, so it blurs via its own rule in
+   `Lightbox.astro` rather than through `.glass--blur`
 
 **Do not add a fourth without checking the DevTools Layers panel.** Putting
 `--blur` on a card grid is the single easiest way to wreck scroll performance.
@@ -171,16 +185,23 @@ Built in, and worth not regressing:
 - Full keyboard navigation; the lightbox uses a native `<dialog>` for real focus
   trapping, and focus returns to the thumbnail that opened it
 - `prefers-reduced-motion` disables all animation
-- `prefers-reduced-transparency` is honoured **and** there is a manual
-  "Reduce transparency" toggle in the footer — the media query has limited
-  browser support, so the toggle is what actually makes this work for most people
+- `prefers-reduced-transparency` is honoured automatically wherever the browser
+  implements it, which today means Chromium. Safari and Firefox do not support
+  the query, so there is currently **no** path to reduced transparency there.
+  That is a deliberate trade-off: the manual footer toggle that used to cover
+  the gap was a second source of truth with a saved preference of its own, and
+  removing it was judged better than maintaining two. Revisit if the query does
+  not ship more widely
 - Works with JavaScript disabled **and when JavaScript breaks**. The reveal
   animation's hidden state is gated behind a class an inline script adds, and the
   same script arms a 2s failsafe that removes it again. If the module bundle
   never loads — a partial deploy, a blocked request, a throw in earlier init —
   the page reveals itself instead of sitting blank forever
 - The mobile menu marks the page behind it `inert` while open, so keyboard and
-  screen-reader users can't tab into content hidden under the sheet
+  screen-reader users can't tab into content hidden under the sheet. It is
+  `aria-modal`, which hides everything outside it — including the burger that
+  opened it — so the sheet carries its own labelled close button as its first
+  child, and opening the menu focuses that rather than the first link
 - Windows High Contrast mode supported via `forced-colors`
 
 ### Team bios contain no gendered pronouns
@@ -218,10 +239,27 @@ If it ever lands on a project-path URL (`username.github.io/repo/`), also set
 
 ### Social preview
 
-`public/og-card.png` (1200x630) is what unfurls in Slack, iMessage, WhatsApp and
+`public/og-card.jpg` (1200x630) is what unfurls in Slack, iMessage, WhatsApp and
 email. Regenerate it if the experiment title or emblem changes. After deploying,
 validate with **opengraph.xyz** or Slack's own unfurl — caches are aggressive, so
-test before sending the link to a sponsor.
+test before sending the link to a sponsor. **Changing its filename is the only
+reliable cache-bust** for an unfurl that has already been seen.
+
+### Prefetch and deploys
+
+Links prefetch on **hover**, not on viewport. Viewport prefetching cached every
+page in the nav seconds after load, and Chromium will serve a prefetched
+document for five minutes regardless of `max-age` — while the host purges the
+previous build's hashed assets the moment a new deploy goes live. Anyone still
+on the site across a deploy was navigating into stale HTML that asked for CSS
+which no longer existed. Hover still front-runs the click; the stale window
+shrinks to nothing.
+
+### Missing pages
+
+`src/pages/404.astro` builds to `dist/404.html`, which Netlify serves for any
+unmatched path with no redirect rule. It matters because `_redirects` funnels
+every `canrgx.ca` path onto `clotless.ca`, so old or mistyped links land there.
 
 ---
 
@@ -231,12 +269,12 @@ test before sending the link to a sponsor.
 src/
 ├── content.config.ts    Zod schemas for all six collections
 ├── content/             ← the site's content; edit these
-│   ├── team/            7 members
-│   ├── sponsors/        6 partners
+│   ├── team/            one file per member
+│   ├── sponsors/        one file per partner (draft: true hides one)
 │   ├── gallery/         optional photo metadata
-│   ├── objectives/      4 mission objectives
-│   ├── design/          overview + 5 subsystems
-│   └── timeline/        7 project phases
+│   ├── objectives/      the mission objectives
+│   ├── design/          00-overview + one file per subsystem
+│   └── timeline/        one file per project phase
 ├── assets/              ← images; optimised at build time
 │   ├── team/            headshots (filename = content filename)
 │   ├── logos/           sponsor marks
@@ -252,9 +290,15 @@ src/
 ├── components/          presentational; rarely need editing
 ├── layouts/             page shells
 ├── lib/                 image binding, monograms, BASE_URL-safe links
-├── scripts/             nav, reveals, lightbox, transparency toggle
-└── pages/               the six routes
+├── scripts/             nav, reveals, lightbox
+└── pages/               the six routes, plus 404
+
+scripts/                 build-time helpers (prune + inline-script assert)
 ```
+
+Counts are deliberately not written down here — every collection is "one file
+per thing", so a number in this README is a number that goes stale the first
+time someone adds a photo.
 
 ---
 
@@ -267,7 +311,8 @@ src/
 - Only **confirmed** sponsors appear. Pending approaches are deliberately not
   listed — publicly naming a company that hasn't agreed to anything reads badly to
   the very people being asked.
-- Individual `@student.ubc.ca` addresses from the flight manifest are not
-  published; the site uses one team contact, set in `src/data/site.ts`.
+- The footer publishes **two** team addresses, deliberately, from
+  `site.contacts` in `src/data/site.ts`; the first of them is also the "Get in
+  touch" contact. No other address from the flight manifest is published.
 - Gallery photos had EXIF stripped during processing — the originals carried GPS
   coordinates and device identifiers.
