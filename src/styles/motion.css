@@ -10,7 +10,11 @@
    hidden only while code capable of revealing it is demonstrably alive —
    whether JS is disabled, blocked, or throws, the page ends up readable.
    Implementations that default to opacity:0 in plain CSS hide their content
-   permanently the first time a script fails. */
+   permanently the first time a script fails.
+
+   Note that reveal.ts suppresses this transition on anything already on screen
+   when it runs, so a landing paints immediately and only content you scroll to
+   fades in. The transition below is therefore the below-the-fold case only. */
 /* No will-change here on purpose. It was promoting every below-the-fold reveal
    to its own compositor layer and holding it there until it scrolled into view
    — on a long page that is a dozen-plus persistent layers the GPU recomposites

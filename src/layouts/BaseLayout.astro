@@ -66,10 +66,11 @@ const ogImage = new URL('/og-card.png', Astro.site);
       The failsafe is the important part. "JS disabled" is the easy case — this
       script never runs, the class never lands, everything is visible. The
       dangerous case is this inline script succeeding while the module bundle
-      does not: a partial deploy, a blocked request, or a throw in any earlier
-      init. Without the timeout, .js-reveal would survive with nothing left to
-      clear it and every page would sit at opacity 0 forever. reveal.ts cancels
-      the timer as soon as it takes over.
+      does not: a partial deploy, a blocked request, or a throw anywhere inside
+      the boot module before initReveal() is reached. Without the timeout,
+      .js-reveal would survive with nothing left to clear it and every page
+      would sit at opacity 0 forever. reveal.ts cancels the timer as soon as it
+      takes over.
     */}
     <script is:inline>
       (() => {
@@ -88,12 +89,6 @@ const ogImage = new URL('/og-card.png', Astro.site);
     <Aurora intensity={aurora} />
     <GrainOverlay />
 
-    {/*
-      Deliberately NOT transition:persist. The nav's active state is per-page —
-      persisting the old element across a swap would freeze `is-current` and
-      `aria-current="page"` on whichever page you first landed on, telling
-      screen readers the wrong thing. It is cheap to re-render.
-    */}
     <NavBar />
     <MobileMenu />
 
@@ -107,14 +102,23 @@ const ogImage = new URL('/og-card.png', Astro.site);
       import { initNav } from '../scripts/nav';
       import { initReveal } from '../scripts/reveal';
 
+      // Orphaned key from the removed "Reduce transparency" toggle. Anyone who
+      // used it still has the preference stored with nothing left to read it.
+      // Safe to delete this line once the site has been live for a while.
+      try { localStorage.removeItem('clotless:transparency'); } catch {}
+
       // Plain multi-page navigation: each page is a fresh document load, so
       // this module runs once per page and boots directly. No view-transition
       // re-binding — that machinery was adding 2–3s to every page change, and
       // static navigation to these pre-rendered pages paints in ~150ms instead.
       // Prefetch keeps each page's HTML warm in cache, so the browser's own
       // navigation is effectively instant.
-      initNav();
+      //
+      // Reveal goes first, deliberately. It is what makes the page visible at
+      // all, and a throw anywhere in initNav must not be able to leave the
+      // content sitting at opacity 0. Reveal depends on nothing initNav does.
       initReveal();
+      initNav();
     </script>
   </body>
 </html>

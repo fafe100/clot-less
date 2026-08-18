@@ -4,17 +4,13 @@
  * Using the platform element rather than a div means focus trapping, ESC to
  * close, inert background and the ::backdrop pseudo-element all come free and
  * correct — several hundred bytes instead of a modal library.
+ *
+ * Runs once per document load; there is no client-side navigation here, so no
+ * listener can be bound twice and nothing needs tearing down.
  */
 type Item = { full: string; alt: string; caption: string; phase: string };
 
-/** Torn down and re-established on each boot, so repeated init can't double-bind. */
-let controller: AbortController | null = null;
-
 export function initLightbox(): void {
-  controller?.abort();
-  controller = new AbortController();
-  const { signal } = controller;
-
   const dialog = document.querySelector<HTMLDialogElement>('[data-lightbox]');
   const grid = document.querySelector<HTMLElement>('[data-gallery]');
   if (!dialog || !grid) return;
@@ -57,59 +53,43 @@ export function initLightbox(): void {
     counter.textContent = `${index + 1} / ${pool.length}`;
   }
 
-  grid.addEventListener(
-    'click',
-    (e) => {
-      const trigger = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-lightbox-open]');
-      if (!trigger) return;
-      lastFocused = trigger;
-      show(visible().indexOf(trigger));
-      dialog.showModal();
-    },
-    { signal },
-  );
+  grid.addEventListener('click', (e) => {
+    const trigger = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-lightbox-open]');
+    if (!trigger) return;
+    lastFocused = trigger;
+    show(visible().indexOf(trigger));
+    dialog.showModal();
+  });
 
   dialog.querySelector('[data-lightbox-prev]')
-    ?.addEventListener('click', () => show(index - 1), { signal });
+    ?.addEventListener('click', () => show(index - 1));
   dialog.querySelector('[data-lightbox-next]')
-    ?.addEventListener('click', () => show(index + 1), { signal });
+    ?.addEventListener('click', () => show(index + 1));
   dialog.querySelector('[data-lightbox-close]')
-    ?.addEventListener('click', () => dialog.close(), { signal });
+    ?.addEventListener('click', () => dialog.close());
 
-  dialog.addEventListener(
-    'keydown',
-    (e) => {
-      if (e.key === 'ArrowRight') { e.preventDefault(); show(index + 1); }
-      if (e.key === 'ArrowLeft') { e.preventDefault(); show(index - 1); }
-    },
-    { signal },
-  );
+  dialog.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); show(index + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); show(index - 1); }
+  });
 
   // Click the backdrop (outside the figure) to dismiss.
-  dialog.addEventListener(
-    'click',
-    (e) => {
-      if (e.target === dialog) dialog.close();
-    },
-    { signal },
-  );
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
 
   // Return focus to the thumbnail that opened it.
-  dialog.addEventListener(
-    'close',
-    () => {
-      lastFocused?.focus();
-      lastFocused = null;
-    },
-    { signal },
-  );
+  dialog.addEventListener('close', () => {
+    lastFocused?.focus();
+    lastFocused = null;
+  });
 
   // Swipe navigation.
   let startX = 0;
   dialog.addEventListener(
     'touchstart',
     (e) => { startX = e.changedTouches[0]!.clientX; },
-    { passive: true, signal },
+    { passive: true },
   );
   dialog.addEventListener(
     'touchend',
@@ -117,52 +97,43 @@ export function initLightbox(): void {
       const dx = e.changedTouches[0]!.clientX - startX;
       if (Math.abs(dx) > 50) show(dx < 0 ? index + 1 : index - 1);
     },
-    { passive: true, signal },
+    { passive: true },
   );
 }
 
-let filterController: AbortController | null = null;
-
 /** Category filter. Pure attribute toggling — no re-render, no layout thrash. */
 export function initGalleryFilter(): void {
-  filterController?.abort();
-  filterController = new AbortController();
-
   const grid = document.querySelector<HTMLElement>('[data-gallery]');
   const bar = document.querySelector<HTMLElement>('[data-gallery-filter]');
   if (!grid || !bar) return;
 
-  bar.addEventListener(
-    'click',
-    (e) => {
-      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-category]');
-      if (!btn) return;
+  bar.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-category]');
+    if (!btn) return;
 
-      const category = btn.dataset.category!;
-      bar.querySelectorAll<HTMLButtonElement>('[data-category]').forEach((b) => {
-        const active = b === btn;
-        b.classList.toggle('is-active', active);
-        b.setAttribute('aria-pressed', String(active));
-      });
+    const category = btn.dataset.category!;
+    bar.querySelectorAll<HTMLButtonElement>('[data-category]').forEach((b) => {
+      const active = b === btn;
+      b.classList.toggle('is-active', active);
+      b.setAttribute('aria-pressed', String(active));
+    });
 
-      let shown = 0;
-      grid.querySelectorAll<HTMLElement>('[data-item-category]').forEach((item) => {
-        const hide = category !== 'all' && item.dataset.itemCategory !== category;
-        item.hidden = hide;
-        if (!hide) shown += 1;
-      });
+    let shown = 0;
+    grid.querySelectorAll<HTMLElement>('[data-item-category]').forEach((item) => {
+      const hide = category !== 'all' && item.dataset.itemCategory !== category;
+      item.hidden = hide;
+      if (!hide) shown += 1;
+    });
 
-      // Without this the on-screen count contradicts the grid, and the change
-      // is silent for anyone not watching the layout reflow.
-      const count = document.querySelector<HTMLElement>('[data-gallery-count]');
-      if (count) {
-        const label = btn.textContent?.trim() ?? '';
-        count.textContent =
-          category === 'all'
-            ? `${shown} photograph${shown === 1 ? '' : 's'}`
-            : `${shown} photograph${shown === 1 ? '' : 's'} in ${label}`;
-      }
-    },
-    { signal: filterController.signal },
-  );
+    // Without this the on-screen count contradicts the grid, and the change
+    // is silent for anyone not watching the layout reflow.
+    const count = document.querySelector<HTMLElement>('[data-gallery-count]');
+    if (count) {
+      const label = btn.textContent?.trim() ?? '';
+      count.textContent =
+        category === 'all'
+          ? `${shown} photograph${shown === 1 ? '' : 's'}`
+          : `${shown} photograph${shown === 1 ? '' : 's'} in ${label}`;
+    }
+  });
 }

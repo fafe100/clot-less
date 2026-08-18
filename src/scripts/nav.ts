@@ -5,31 +5,16 @@
  * scroll listener. Scroll handlers run on the main thread every frame, which is
  * exactly what you cannot afford next to a backdrop-filter element.
  *
- * Teardown matters here. `boot()` re-runs on every client-side navigation, and
- * `document` survives those swaps — so a listener bound to it without cleanup
- * accumulates one copy per page visited. The AbortController tears down the
- * previous run's bindings before establishing new ones.
+ * Every navigation on this site is a full document load, so this runs once per
+ * page against a fresh `document`. Nothing survives a page change, and nothing
+ * here needs tearing down.
  */
-let controller: AbortController | null = null;
-let observer: IntersectionObserver | null = null;
-
 export function initNav(): void {
-  controller?.abort();
-  observer?.disconnect();
-  controller = new AbortController();
-  const { signal } = controller;
-
-  // A swap while the menu was open would otherwise leave the page unscrollable
-  // and its content inert.
-  document.documentElement.style.overflow = '';
-  document.querySelector('#main')?.removeAttribute('inert');
-  document.querySelector('footer')?.removeAttribute('inert');
-
   const nav = document.querySelector<HTMLElement>('[data-nav]');
   const sentinel = document.querySelector<HTMLElement>('[data-nav-sentinel]');
 
   if (nav && sentinel) {
-    observer = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       ([entry]) => {
         nav.classList.toggle('is-scrolled', !entry!.isIntersecting);
       },
@@ -62,40 +47,26 @@ export function initNav(): void {
     }
   };
 
-  toggle.addEventListener(
-    'click',
-    () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'),
-    { signal },
+  toggle.addEventListener('click', () =>
+    setOpen(toggle.getAttribute('aria-expanded') !== 'true'),
   );
 
-  menu.addEventListener(
-    'click',
-    (e) => {
-      if ((e.target as HTMLElement).closest('a')) setOpen(false);
-    },
-    { signal },
-  );
+  menu.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) setOpen(false);
+  });
 
-  document.addEventListener(
-    'keydown',
-    (e) => {
-      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
-        setOpen(false);
-        toggle.focus();
-      }
-    },
-    { signal },
-  );
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+      setOpen(false);
+      toggle.focus();
+    }
+  });
 
   // Tapping the scrim closes it. Without this the only exits are a nav link or
   // the Escape key, and a touch user has neither instinct nor a keyboard.
-  menu.addEventListener(
-    'pointerdown',
-    (e) => {
-      if (e.target === menu) setOpen(false);
-    },
-    { signal },
-  );
+  menu.addEventListener('pointerdown', (e) => {
+    if (e.target === menu) setOpen(false);
+  });
 
   /* Crossing the desktop breakpoint while the menu is open used to strand the
      page: the sheet and the burger both become display:none at ≥860px, but
@@ -103,11 +74,7 @@ export function initNav(): void {
      leaving the page unscrollable with no visible control to undo it. Rotating
      a phone to landscape was enough to trigger it. */
   const desktop = window.matchMedia('(width >= 860px)');
-  desktop.addEventListener(
-    'change',
-    (e) => {
-      if (e.matches) setOpen(false);
-    },
-    { signal },
-  );
+  desktop.addEventListener('change', (e) => {
+    if (e.matches) setOpen(false);
+  });
 }

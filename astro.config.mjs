@@ -11,11 +11,11 @@ export default defineConfig({
   base: '/',
   trailingSlash: 'ignore',
   integrations: [sitemap()],
-  // Without this, the ClientRouter cold-fetches each page's HTML on click —
-  // the 1–2s stall before a navigation even starts. `viewport` prefetches a
-  // link as soon as it is on screen; since the nav is always visible, all six
-  // pages are cached shortly after load, so every navigation (including the
-  // first) is effectively instant. Six small HTML docs is trivial bandwidth.
+  // Navigation is the browser's own, so the only cost it can carry is fetching
+  // the next document. `viewport` prefetches a link as soon as it is on screen;
+  // since the nav is always visible, all six pages are cached shortly after
+  // load and the fetch is already done by the time a link is clicked. Six small
+  // HTML docs is trivial bandwidth.
   prefetch: {
     prefetchAll: true,
     defaultStrategy: 'viewport',

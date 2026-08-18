@@ -137,7 +137,8 @@ const pathname = Astro.url.pathname;
     color: var(--text-primary);
   }
 
-  /* The active indicator slides between items via the view transition. */
+  /* The active indicator. Each page is its own document, so it simply renders
+     under whichever link is current — there is nothing to animate between. */
   .nav__link.is-current::after {
     content: '';
     position: absolute;
@@ -148,7 +149,6 @@ const pathname = Astro.url.pathname;
     margin-inline-start: -2px;
     border-radius: 50%;
     background-color: var(--signal);
-    view-transition-name: nav-indicator;
   }
 
   .nav__toggle {
