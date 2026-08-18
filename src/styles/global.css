@@ -98,12 +98,14 @@
   background-color: var(--surface-base);
 }
 
+/* No will-change. A running transform animation promotes its own layer, so the
+   hint bought nothing — and it survived prefers-reduced-motion, holding a
+   compositor layer per blob for a user who asked for no animation at all. */
 .aurora__blob {
   position: absolute;
   border-radius: 50%;
   filter: blur(90px);
   opacity: 0.5;
-  will-change: transform;
 }
 
 /* Grain. Highest ratio of perceived quality to effort in the whole project:

@@ -70,10 +70,13 @@ const pathname = Astro.url.pathname;
     padding-inline: var(--space-5);
     /* Confines repaints to the pill — critical next to backdrop-filter. */
     contain: paint;
+    /* Height is deliberately NOT transitioned. Animating the box of a
+       backdrop-filter element forces the browser to re-resample the backdrop on
+       every frame of the transition, which is the exact cost the rest of this
+       file is written to avoid — and the 6px snap is imperceptible. */
     transition:
       background-color var(--dur-base) var(--ease-out),
-      box-shadow var(--dur-base) var(--ease-out),
-      height var(--dur-base) var(--ease-out);
+      box-shadow var(--dur-base) var(--ease-out);
   }
 
   /* Never transition backdrop-filter itself — it forces a re-resample every

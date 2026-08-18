@@ -34,13 +34,6 @@ const team = defineCollection({
     responsibilities: z.array(z.string()).min(1),
     order: z.number(),
     featured: z.boolean().default(false),
-    links: z
-      .object({
-        linkedin: z.string().url().optional(),
-        orcid: z.string().url().optional(),
-        email: z.string().email().optional(),
-      })
-      .default({}),
     // No `photo` field by design. Drop a file into src/assets/team/ named after
     // this entry's filename and it is picked up on the next build.
   }),

@@ -15,8 +15,10 @@ export function initNav(): void {
 
   if (nav && sentinel) {
     const observer = new IntersectionObserver(
-      ([entry]) => {
-        nav.classList.toggle('is-scrolled', !entry!.isIntersecting);
+      (entries) => {
+        // Batched records arrive oldest-first, so the last one is the truth.
+        const entry = entries[entries.length - 1]!;
+        nav.classList.toggle('is-scrolled', !entry.isIntersecting);
       },
       { threshold: 0 },
     );

@@ -2,6 +2,9 @@
  * Site-wide singleton config. Nav order, metadata and contact details live
  * here so they are changed in one place.
  */
+/** Every address shown in the footer. Add or remove a line here. */
+const contacts = ['atabari@student.ubc.ca', 'fafe@student.ubc.ca'] as const;
+
 export const site = {
   name: 'CLOT-LESS',
   team: 'Team CLOT-LESS',
@@ -11,10 +14,10 @@ export const site = {
   tagline: 'Thrombolysis has never been tested in microgravity.',
   description:
     'Team CLOT-LESS is flying the first in-vitro study of thrombolysis kinetics in reduced gravity on the Canadian Space Agency’s CAN-RGX parabolic flight campaign.',
-  // Primary contact — used for the "Get in touch" call to action.
-  contact: 'atabari@student.ubc.ca',
-  // All addresses shown in the footer. Add or remove a line here.
-  contacts: ['atabari@student.ubc.ca', 'fafe@student.ubc.ca'],
+  contacts,
+  // Primary contact — the "Get in touch" call to action. Derived rather than
+  // repeated, so the two can never drift apart.
+  contact: contacts[0],
   // Google Search Console ownership token. Paste the value from the "HTML tag"
   // verification method here (the content="..." string), then verify in the
   // console. Leave empty to render no tag.

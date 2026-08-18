@@ -11,7 +11,11 @@ import GlassPanel from '../components/glass/GlassPanel.astro';
 import Reveal from '../components/Reveal.astro';
 
 const design = (await getCollection('design')).sort((a, b) => a.data.order - b.data.order);
-const overview = design.find((d) => d.data.order === 0)!;
+// Found by id, not by order === 0. A renumbered file would have made `!` a lie
+// and crashed the build on a null deref two lines later; this says what is
+// actually required.
+const overview = design.find((d) => d.id === '00-overview');
+if (!overview) throw new Error('design collection needs a 00-overview entry');
 const subsystems = design.filter((d) => d.data.order > 0);
 const { Content: Overview } = await render(overview);
 ---
@@ -27,7 +31,7 @@ const { Content: Overview } = await render(overview);
         <Overview />
       </Reveal>
 
-      <Reveal class="design__hero-wrap" index={1}>
+      <Reveal index={1}>
         {overview.data.hero && (
           <GlassPanel class="design__hero" radius="xl" elevation={3}>
             <Image
