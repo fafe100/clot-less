@@ -8,7 +8,7 @@ const contacts = ['atabari@student.ubc.ca', 'fafe@student.ubc.ca'] as const;
 export const site = {
   name: 'CLOT-LESS',
   team: 'Team CLOT-LESS',
-  experiment: 'A Quantitative Analysis of Thrombolysis Kinetics in Microgravity',
+  experiment: 'An Analysis of Thrombolysis Kinetics in Microgravity',
   campaign: 'CAN-RGX 2025–26',
   institution: 'University of British Columbia',
   tagline: 'A platform for hematologic research in zero gravity.',
