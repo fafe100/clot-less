@@ -4,7 +4,7 @@
 name: Adrian Tabari
 credentials: MD Student, PharmD, BSc
 affiliation: UBC Faculty of Medicine — Island Medical Program
-position: Third-year MD student
+position: Fourth-year MD student
 role: Mission Specialist
 order: 1
 featured: true

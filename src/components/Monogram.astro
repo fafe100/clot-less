@@ -39,19 +39,13 @@ const { from, to } = monogramGradient(name);
     height: 100%;
     overflow: hidden;
     container-type: inline-size;
-    background: linear-gradient(155deg, var(--from) 0%, var(--to) 100%);
+    background: var(--from);
   }
 
   /* A soft diagonal highlight so the tile reads as the same material as the
      glass around it, rather than a flat colour swatch. Sits below the initials
      in DOM order so it cannot wash them out. */
-  .mono__sheen {
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(80% 55% at 22% 8%, rgb(255 255 255 / 0.14) 0%, transparent 60%),
-      radial-gradient(70% 60% at 88% 100%, rgb(250 190 180 / 0.12) 0%, transparent 62%);
-  }
+  .mono__sheen { display: none; }
 
   /* Echoes the emblem's roundel — makes the placeholder feel like part of the
      mission identity rather than a missing-image state. */

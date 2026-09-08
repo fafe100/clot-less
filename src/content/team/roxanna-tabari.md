@@ -2,7 +2,7 @@
 name: Roxanna Tabari
 credentials: PharmD Student, BSc
 affiliation: UBC Faculty of Pharmaceutical Sciences
-position: Third-year PharmD student
+position: Fourth-year PharmD student
 role: Ground Crew
 order: 6
 responsibilities:

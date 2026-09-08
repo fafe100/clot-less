@@ -1,0 +1,27 @@
+---
+import { Image } from 'astro:assets';
+import cabinPhoto from '../assets/flight/inside-aircraft.png';
+---
+
+<div class="cabin-photo">
+  <Image
+    src={cabinPhoto}
+    alt="CLOT-LESS team members in flight suits seated beside the experiment laptop inside the aircraft."
+    widths={[800, 1600]}
+    sizes="(max-width: 760px) 123vw, 800px"
+    loading="lazy"
+    style="position:absolute;width:133.333333%;max-width:none;height:75%;left:-16.666667%;top:12.5%;object-fit:contain;transform:rotate(90deg)"
+  />
+</div>
+
+<style>
+  /* The original is sideways (4:3); the upright frame is 3:4.
+     Swap the display dimensions before rotating, preserving every pixel's ratio. */
+  .cabin-photo {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: var(--r-lg);
+  }
+</style>

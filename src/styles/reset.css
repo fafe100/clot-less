@@ -42,6 +42,12 @@ svg {
   max-width: 100%;
 }
 
+/* Preserve intrinsic proportions when max-width shrinks an image.
+   Explicit image frames can still opt into their own height and object-fit. */
+img {
+  height: auto;
+}
+
 input,
 button,
 textarea,

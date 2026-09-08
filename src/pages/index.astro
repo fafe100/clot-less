@@ -12,6 +12,7 @@ import { site, homeStats } from '../data/site';
 import { link } from '../lib/link';
 import { getSponsorLogo } from '../lib/images';
 import { Image } from 'astro:assets';
+import CabinPhoto from '../components/CabinPhoto.astro';
 
 const objectives = (await getCollection('objectives')).sort((a, b) => a.data.order - b.data.order);
 const team = (await getCollection('team'))
@@ -27,7 +28,7 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
   <section class="hero">
     <div class="shell hero__inner">
       <div class="hero__emblem enter" style="--enter-delay:80ms">
-        <Emblem size={330} glow float priority />
+        <Emblem size={330} priority />
       </div>
 
       <div class="hero__copy">
@@ -40,9 +41,8 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
         </h1>
 
         <p class="t-lede hero__lede enter" style="--enter-delay:380ms">
-          {site.tagline} Team CLOT-LESS is flying the first in-vitro study of clot
-          dissolution in reduced gravity — because on a mission to Mars, nobody is
-          coming to help.
+          Team CLOT-LESS is developing an experimental platform to study
+          thrombolysis and other hematologic research questions in zero gravity.
         </p>
 
         <div class="hero__actions enter" style="--enter-delay:460ms">
@@ -100,18 +100,14 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
     </div>
   </section>
 
-  {/* The mission in one paragraph. Restraint here is the point — this is the
-      one idea a visitor should leave with. */}
   <section class="section">
-    <div class="shell">
+    <div class="shell campaign">
       <Reveal>
-        <p class="t-lede statement">
-          Astronauts are at measurable risk of dangerous blood clots. We know how to
-          dissolve a clot on Earth. Nobody has ever tested whether that treatment
-          still works when gravity is taken away — and on a deep-space mission,
-          with communication delays measured in minutes, a crew has to handle that
-          alone. CLOT-LESS is built to close that gap.
-        </p>
+        <CabinPhoto />
+      </Reveal>
+      <Reveal index={1}>
+        <SectionHeader title="Our flight campaign" />
+        <p class="section__more"><a href={link('/gallery')}>Photos and videos →</a></p>
       </Reveal>
     </div>
   </section>
@@ -130,11 +126,7 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
 
   <section class="section">
     <div class="shell">
-      <SectionHeader
-        eyebrow="Mission objectives"
-        title="Four questions this flight has to answer"
-        lede="Each objective carries its own measurable success criteria, traced from the science question down to the instrument that answers it."
-      />
+      <SectionHeader title="Project goals" />
       <ul class="grid-auto" role="list" style="--col-min:250px">
         {objectives.map((entry, i) => (
           <Reveal as="li" index={i}>
@@ -150,11 +142,7 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
 
   <section class="section">
     <div class="shell">
-      <SectionHeader
-        eyebrow="The crew"
-        title="Medicine, Pharmacy, Engineering"
-        lede="A student-led team spanning two universities and three faculties."
-      />
+      <SectionHeader title="The team" />
     </div>
     <ul class="team-strip" role="list" tabindex="0" aria-label="Featured team members, scrollable">
       {team.map((entry) => (
@@ -171,6 +159,9 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
 </BaseLayout>
 
 <style>
+  .campaign { display: grid; gap: var(--space-8); align-items: center; }
+  @media (min-width: 880px) { .campaign { grid-template-columns: 1.15fr 1fr; } }
+
   /* Deliberately NOT 100svh. A full-viewport hero guarantees that whatever
      follows starts below the fold; the partners rail is meant to be visible
      without scrolling, so the height is content-driven instead. */

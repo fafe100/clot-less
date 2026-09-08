@@ -9,6 +9,8 @@ import FlightProfile from '../components/FlightProfile.astro';
 import FlowPath from '../components/FlowPath.astro';
 import GlassPanel from '../components/glass/GlassPanel.astro';
 import Reveal from '../components/Reveal.astro';
+import { resolveContentImage } from '../lib/images';
+import annotatedPayload from '../assets/design/payload-annotated.png';
 
 const design = (await getCollection('design')).sort((a, b) => a.data.order - b.data.order);
 // Found by id, not by order === 0. A renumbered file would have made `!` a lie
@@ -18,6 +20,7 @@ const overview = design.find((d) => d.id === '00-overview');
 if (!overview) throw new Error('design collection needs a 00-overview entry');
 const subsystems = design.filter((d) => d.data.order > 0);
 const { Content: Overview } = await render(overview);
+const overviewImage = resolveContentImage(overview.data.hero);
 ---
 
 <PageLayout
@@ -32,10 +35,10 @@ const { Content: Overview } = await render(overview);
       </Reveal>
 
       <Reveal index={1}>
-        {overview.data.hero && (
+        {overviewImage && (
           <GlassPanel class="design__hero" radius="xl" elevation={3}>
             <Image
-              src={overview.data.hero}
+              src={overviewImage}
               alt={overview.data.heroAlt ?? 'CAD render of the CLOT-LESS payload'}
               widths={[520, 1000]}
               sizes="(max-width: 939.98px) 92vw, 540px"
@@ -58,6 +61,16 @@ const { Content: Overview } = await render(overview);
           </Reveal>
         ))}
       </ul>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="shell">
+      <SectionHeader eyebrow="The layout" title="Inside the experimental platform" />
+      <figure class="design__diagram">
+        <Image src={annotatedPayload} alt="Two annotated CAD views locating the controller, IV bag and power enclosures, microchannels, pumps, pinch valves and camera." widths={[640, 1180, 2360]} sizes="92vw" loading="lazy" />
+        <figcaption class="t-caption">Two views of the payload layout and its main components.</figcaption>
+      </figure>
     </div>
   </section>
 
@@ -139,6 +152,9 @@ const { Content: Overview } = await render(overview);
 </PageLayout>
 
 <style>
+  .design__diagram { margin: 0; }
+  .design__diagram img { width: 100%; height: auto; border-radius: var(--r-lg); }
+  .design__diagram figcaption { margin-top: var(--space-3); }
   .design__intro {
     display: grid;
     gap: var(--space-8);
@@ -191,9 +207,8 @@ const { Content: Overview } = await render(overview);
   }
 
   .design__panel--safety {
-    background-image:
-      linear-gradient(180deg, rgb(255 255 255 / 0.045) 0%, rgb(255 255 255 / 0) 42%),
-      radial-gradient(120% 90% at 10% 0%, rgb(110 20 20 / 0.4) 0%, transparent 62%);
+    background-image: none;
+    background-color: #302126;
   }
 
   .design__safety-brow {

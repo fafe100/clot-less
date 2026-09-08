@@ -1,8 +1,6 @@
 ---
 import { site } from '../data/site';
 import { link } from '../lib/link';
-import Aurora from '../components/Aurora.astro';
-import GrainOverlay from '../components/GrainOverlay.astro';
 import NavBar from '../components/nav/NavBar.astro';
 import MobileMenu from '../components/nav/MobileMenu.astro';
 import Footer from '../components/Footer.astro';
@@ -15,7 +13,7 @@ interface Props {
   aurora?: 'hero' | 'page';
 }
 
-const { title, description = site.description, aurora = 'page' } = Astro.props;
+const { title, description = site.description } = Astro.props;
 const fullTitle = title === site.name ? `${site.name} — ${site.experiment}` : `${title} · ${site.name}`;
 
 /* Absolute URLs, required by Open Graph — relative paths are ignored by most
@@ -32,7 +30,7 @@ const ogImage = new URL(link('/og-card.jpg'), Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#0A143C" />
+    <meta name="theme-color" content="#101820" />
     <link rel="icon" href={link('/favicon.svg')} type="image/svg+xml" />
     {site.googleSiteVerification && (
       <meta name="google-site-verification" content={site.googleSiteVerification} />
@@ -86,8 +84,6 @@ const ogImage = new URL(link('/og-card.jpg'), Astro.site);
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
 
-    <Aurora intensity={aurora} />
-    <GrainOverlay />
 
     <NavBar />
     <MobileMenu />

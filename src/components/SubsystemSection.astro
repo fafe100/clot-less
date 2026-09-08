@@ -5,6 +5,7 @@ import { render } from 'astro:content';
 import GlassPanel from './glass/GlassPanel.astro';
 import SpecTable from './SpecTable.astro';
 import Reveal from './Reveal.astro';
+import { resolveContentImage } from '../lib/images';
 
 interface Props {
   entry: CollectionEntry<'design'>;
@@ -13,6 +14,7 @@ interface Props {
 
 const { entry, index } = Astro.props;
 const { data } = entry;
+const heroImage = resolveContentImage(data.hero);
 const { Content } = await render(entry);
 
 // Alternate the image side so a run of subsystems doesn't read as a list.
@@ -28,12 +30,12 @@ const flipped = index % 2 === 1;
   </div>
 
   <div class="sub__aside">
-    {data.hero && (
+    {heroImage && (
       /* CAD renders are light artwork on a white ground, so they sit on their
          own light plate rather than being knocked out onto the navy field. */
       <GlassPanel class="sub__figure" radius="xl" elevation={3}>
         <Image
-          src={data.hero}
+          src={heroImage}
           alt={data.heroAlt ?? `${data.title} — CAD render`}
           widths={[480, 900]}
           sizes="(max-width: 899.98px) 92vw, 520px"

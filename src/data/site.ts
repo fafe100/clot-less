@@ -11,9 +11,9 @@ export const site = {
   experiment: 'A Quantitative Analysis of Thrombolysis Kinetics in Microgravity',
   campaign: 'CAN-RGX 2025–26',
   institution: 'University of British Columbia',
-  tagline: 'Thrombolysis has never been tested in microgravity.',
+  tagline: 'A platform for hematologic research in zero gravity.',
   description:
-    'Team CLOT-LESS is flying the first in-vitro study of thrombolysis kinetics in reduced gravity on the Canadian Space Agency’s CAN-RGX parabolic flight campaign.',
+    'Team CLOT-LESS is developing an experimental platform for thrombolysis and other hematologic research in zero gravity through the CAN-RGX parabolic flight campaign.',
   contacts,
   // Primary contact — the "Get in touch" call to action. Derived rather than
   // repeated, so the two can never drift apart.

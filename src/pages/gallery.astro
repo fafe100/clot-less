@@ -1,5 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
+import CabinPhoto from '../components/CabinPhoto.astro';
+import SectionHeader from '../components/SectionHeader.astro';
 import PageLayout from '../layouts/PageLayout.astro';
 import GalleryGrid from '../components/GalleryGrid.astro';
 import type { GalleryItem } from '../components/GalleryGrid.astro';
@@ -47,17 +49,18 @@ const CATEGORIES = [
 const present = new Set(items.map((i) => i.category));
 const categories = CATEGORIES.filter((c) => c.id === 'all' || present.has(c.id));
 
-// Sessions are distinct shoot dates. Counting distinct `phase` instead gives 1,
-// because every photo so far belongs to the same project phase.
-const sessionCount = new Set(
-  items.map((i) => i.date?.toISOString().slice(0, 10)).filter(Boolean),
-).size;
+const videos = [
+  { id: 'vtCYrKcYKMw', label: 'Flight campaign · clip 1', short: true },
+  { id: 'rPgQQqF3R4Q', label: 'Flight campaign · clip 2', short: true },
+  { id: '_uP86RT1KPQ', label: 'Flight campaign · clip 3', short: true },
+  { id: 'X2ObDfVjtqk', label: 'Flight campaign · video', short: false },
+];
 ---
 
 <PageLayout
-  eyebrow="Progress"
-  title="Building the payload"
-  lede="Bench builds, wiring harnesses and fit checks — the payload as it actually came together, photographed along the way."
+  eyebrow="In the lab and in flight"
+  title="From the bench to the flight"
+  lede="The experimental platform, the people behind it, and moments from the CAN-RGX flight campaign."
 >
   <section class="section section--tight">
     <div class="shell">
@@ -84,17 +87,42 @@ const sessionCount = new Set(
         <p
           class="t-caption gallery__count"
           data-gallery-count
-          data-sessions={sessionCount}
           aria-live="polite"
         >
-          {items.length} photograph{items.length === 1 ? '' : 's'} · {sessionCount} build
-          session{sessionCount === 1 ? '' : 's'}
+          {items.length} photograph{items.length === 1 ? '' : 's'}
         </p>
       </Reveal>
 
       <Reveal index={1}>
         <GalleryGrid items={items} />
       </Reveal>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell cabin">
+      <div>
+        <SectionHeader eyebrow="Flight campaign" title="Inside the aircraft" lede="The team and experiment together in the cabin during the CAN-RGX campaign." />
+        <p><a href="#campaign-videos">Watch the campaign videos ↓</a></p>
+      </div>
+      <figure class="cabin__figure">
+        <CabinPhoto />
+        <figcaption class="t-caption">A view from inside the cabin.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section" id="campaign-videos">
+    <div class="shell">
+      <SectionHeader eyebrow="Watch" title="Flight campaign videos" />
+      <div class="videos">
+        {videos.map((video) => (
+          <article class:list={['video', !video.short && 'video--wide']}>
+            <iframe src={`https://www.youtube-nocookie.com/embed/${video.id}`} title={video.label} loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+            <h3 class="t-small"><a href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer">{video.label} · Watch on YouTube ↗</a></h3>
+          </article>
+        ))}
+      </div>
     </div>
   </section>
 
@@ -110,6 +138,20 @@ const sessionCount = new Set(
 </script>
 
 <style>
+  .cabin { display: grid; gap: var(--space-8); align-items: center; }
+  .cabin__figure { margin: 0; }
+  .cabin__figure figcaption { margin-top: var(--space-3); }
+  .videos { display: grid; gap: var(--space-6); }
+  .video { min-width: 0; }
+  .video iframe { display: block; width: 100%; aspect-ratio: 9 / 16; border: 0; border-radius: var(--r-md); background: var(--surface-inset); }
+  .video--wide iframe { aspect-ratio: 16 / 9; }
+  .video h3 { margin-top: var(--space-3); }
+  @media (min-width: 760px) {
+    .cabin { grid-template-columns: 1fr 1fr; }
+    .videos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .video--wide { grid-column: 1 / -1; max-width: 840px; width: 100%; justify-self: center; }
+  }
+
   .gallery__bar {
     display: flex;
     flex-wrap: wrap;

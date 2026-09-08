@@ -2,7 +2,7 @@
 name: Moeid Elahi
 credentials: MD, MASc, P.Eng
 affiliation: University of Toronto — Department of Anesthesia and Pain Medicine
-position: First-year anesthesia resident
+position: Second-year anesthesia resident
 role: Mission Specialist
 order: 5
 featured: true

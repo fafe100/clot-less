@@ -1,5 +1,5 @@
 /* ============================================================================
-   Design tokens — every value derives from the CLOT-LESS mission emblem.
+   Design tokens — neutral slate surfaces with accents from the mission emblem.
    Custom properties only. No selectors beyond :root.
    ========================================================================== */
 
@@ -14,32 +14,23 @@
   --e-blush: #fabeb4;
 
   /* ── Surfaces — lighter as they elevate ─────────────────────────────────── */
-  --surface-base: #0a143c;
-  --surface-raised: #101b47;
-  --surface-overlay: #16224f;
-  --surface-inset: #071031;
+  --surface-base: #101820;
+  --surface-raised: #18232d;
+  --surface-overlay: #22303c;
+  --surface-inset: #0b1218;
 
   /* ── Glass fills ────────────────────────────────────────────────────────── */
-  --glass-fill-subtle: rgb(22 34 79 / 0.44);
-  --glass-fill: rgb(22 34 79 / 0.58);
-  --glass-fill-strong: rgb(16 27 71 / 0.74);
-  --glass-fill-solid: rgb(16 27 71 / 0.94);
-  --glass-tint-warm: rgb(250 190 180 / 0.05);
+  --glass-fill-subtle: rgb(34 48 60 / 0.66);
+  --glass-fill: rgb(34 48 60 / 0.80);
+  --glass-fill-strong: rgb(24 35 45 / 0.92);
+  --glass-fill-solid: rgb(24 35 45 / 0.98);
+  --glass-tint-warm: transparent;
 
-  /* ── Text tiers ──────────────────────────────────────────────────────────
-     Ratios computed against --surface-base #0A143C. Verified, not estimated.
-     Worst realistic case is a glass panel over a bright photo, which lands near
-     --surface-overlay; --text-tertiary still clears AA there at 4.89:1, so
-     every tier holds regardless of what sits behind it.
-
-     There is deliberately no dimmer tier than --text-tertiary. One existed and
-     came out at 3.10:1 — below AA at every size it was actually used. Any
-     colour dim enough to read as a fourth step fails; any colour that passes is
-     indistinguishable from tertiary. So the ramp stops here. */
-  --text-primary: #fafafa; /* 17.08:1  AAA */
-  --text-secondary: #b8c0dc; /*  9.86:1  AAA — long-form body */
-  --text-tertiary: #8891b0; /*  5.71:1  AA  — captions, metadata */
-  --text-on-accent: #0a143c; /* 11.11:1  AAA on the blush button fill */
+  /* Text tiers on neutral slate surfaces. */
+  --text-primary: #fafafa;
+  --text-secondary: #c3ccd3;
+  --text-tertiary: #a1aeb8;
+  --text-on-accent: #101820;
 
   /* ── Accent ramp ─────────────────────────────────────────────────────────
      Blush is the interactive colour, not red. See the usage law in README.md. */
@@ -76,20 +67,12 @@
   /* ── Blur ───────────────────────────────────────────────────────────────── */
   --blur-lg: 28px;
   --blur-xl: 44px;
-  --saturate: 180%;
+  --saturate: 100%;
 
   /* ── Elevation ──────────────────────────────────────────────────────────── */
-  --shadow-1:
-    0 2px 8px -2px rgb(0 6 20 / 0.35),
-    0 6px 20px -8px rgb(0 6 20 / 0.45);
-  --shadow-2:
-    0 1px 2px rgb(0 6 20 / 0.28),
-    0 8px 24px -6px rgb(0 6 20 / 0.45),
-    0 24px 64px -12px rgb(0 6 20 / 0.55);
-  --shadow-3:
-    0 2px 4px rgb(0 6 20 / 0.32),
-    0 16px 40px -8px rgb(0 6 20 / 0.5),
-    0 40px 96px -16px rgb(0 6 20 / 0.62);
+  --shadow-1: 0 1px 3px rgb(0 6 20 / 0.12);
+  --shadow-2: 0 3px 10px rgb(0 6 20 / 0.16);
+  --shadow-3: 0 5px 16px rgb(0 6 20 / 0.2);
 
   /* ── Motion ─────────────────────────────────────────────────────────────── */
   --ease-out: cubic-bezier(0.32, 0.72, 0, 1);

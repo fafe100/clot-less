@@ -60,7 +60,6 @@ const timeline = (await getCollection('timeline')).sort((a, b) => a.data.order -
             This is the first study to investigate thrombolysis kinetics in vitro
             within a reduced-gravity environment.
           </p>
-          <p class="t-caption">Test Equipment Data Package, Rev B</p>
         </GlassPanel>
 
         <GlassPanel class="about__facts" radius="xl">
@@ -78,11 +77,7 @@ const timeline = (await getCollection('timeline')).sort((a, b) => a.data.order -
 
   <section class="section">
     <div class="shell">
-      <SectionHeader
-        eyebrow="Objectives"
-        title="Four questions this flight has to answer"
-        lede="Each objective traces from a science question down to the instrument that answers it, with the measurable criteria that decide whether it was met."
-      />
+      <SectionHeader title="Project goals" />
       <ul class="grid-auto" role="list" style="--col-min:320px">
         {objectives.map((entry, i) => (
           <Reveal as="li" index={i}>

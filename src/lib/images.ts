@@ -62,3 +62,23 @@ export const getSponsorLogo = (id: string): ImageMetadata | null => SPONSOR_LOGO
 /** Falls back to the full-size image when no pre-made thumbnail exists. */
 export const getGalleryThumb = (id: string): ImageMetadata | null =>
   GALLERY_THUMBS[id] ?? GALLERY_IMAGES[id] ?? null;
+
+const designGlob = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/design/*.{jpg,jpeg,png,webp,avif}',
+  { eager: true },
+);
+const CONTENT_IMAGES = { ...designGlob, ...galleryGlob };
+
+/** Content hot reload can temporarily return the raw Markdown image path.
+ * Resolve that path through Vite imports so Image always receives metadata.
+ * Normal image() schema results pass through unchanged.
+ */
+export function resolveContentImage(
+  value: ImageMetadata | string | undefined,
+): ImageMetadata | undefined {
+  if (typeof value !== 'string') return value;
+  const path = value.replace(/^\.\.\/\.\.\/assets\//, '/src/assets/');
+  const image = CONTENT_IMAGES[path]?.default;
+  if (!image) throw new Error(`Content image has no matching import: ${value}`);
+  return image;
+}

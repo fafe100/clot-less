@@ -3,8 +3,8 @@ number: 3
 title: Validate system reliability
 summary: >-
   Confirm that the integrated fluidic, sensing and logging system behaves
-  consistently across repeated parabolas — because an unreliable instrument
-  cannot answer the first two questions.
+  consistently across repeated parabolas — to support repeatable
+  hematologic experiments in reduced gravity.
 icon: reliability
 order: 3
 metrics:

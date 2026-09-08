@@ -158,14 +158,7 @@ export function initGalleryFilter(): void {
     if (count) {
       const label = btn.textContent?.trim() ?? '';
       const photos = `${shown} photograph${shown === 1 ? '' : 's'}`;
-      // The session tally is server-rendered into a data attribute, because
-      // filtering back to All was otherwise dropping it permanently — the
-      // suffix only holds for the unfiltered set, and only the server knows it.
-      const sessions = Number(count.dataset.sessions ?? '0');
-      count.textContent =
-        category === 'all'
-          ? `${photos} · ${sessions} build session${sessions === 1 ? '' : 's'}`
-          : `${photos} in ${label}`;
+      count.textContent = category === 'all' ? photos : `${photos} in ${label}`;
     }
   });
 }

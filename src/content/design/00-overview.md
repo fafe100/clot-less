@@ -5,12 +5,8 @@ summary: >-
   A closed-loop microfluidic system that perfuses tenecteplase through
   clot-laden microchannels and measures the resulting pressure change in real
   time — the whole thing packed into a single flight case.
-hero: ../../assets/design/cad-side-b.png
-heroAlt: >-
-  CAD render of the CLOT-LESS payload in side view, showing the two peristaltic
-  pumps mounted centrally on the aluminium baseplate, the IP65 enclosure housing
-  the IV bags above them, and the HDPE plate carrying the microchannels and
-  pinch valves at the right-hand edge.
+hero: ../../assets/gallery/assembled-flight-payload.png
+heroAlt: Assembled CLOT-LESS platform showing microchannels, tubing, pumps, sensors and camera on its baseplate.
 order: 0
 stats:
   - value: 13.3 kg

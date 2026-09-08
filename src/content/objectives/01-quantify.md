@@ -1,12 +1,12 @@
 ---
-number: 1
+number: 2
 title: Quantify microgravity effects on thrombolysis
 summary: >-
   Measure the differential pressure change across a clot-containing microchannel
   during tenecteplase perfusion, in microgravity and at 1 g, over matched
   twenty-second analysis windows.
 icon: measure
-order: 1
+order: 2
 metrics:
   - label: Pressure range
     value: ±100 mbar (±1.45 psi)

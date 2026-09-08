@@ -5,6 +5,8 @@ summary: >-
   A Raspberry Pi 5 sequencing every valve and pump, reading both pressure
   sensors over I²C, and timestamping the result — with the operator reduced to
   two buttons.
+hero: ../../assets/design/pressure-sensors-annotated.png
+heroAlt: Annotated photograph identifying Honeywell ABP2 differential pressure sensors and microbore IV tubing.
 order: 4
 specs:
   - label: Controller
