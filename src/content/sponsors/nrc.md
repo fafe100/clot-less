@@ -5,7 +5,7 @@ tier: agency
 url: https://nrc.canada.ca/en
 contribution: Operates the research aircraft flying the campaign
 logoScale: 0.92
-order: 4
+order: 5
 ---
 
 The National Research Council operates the research aircraft and the flight

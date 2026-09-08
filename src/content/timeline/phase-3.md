@@ -1,9 +1,8 @@
 ---
 phase: Phase 3
 title: Ground studies
-status: upcoming
+status: complete
 detail: >-
-  Full experimental runs at 1 g, producing the matched baseline dataset every
-  microgravity measurement is compared against.
+  Ground testing supported preparation of the experimental platform for flight.
 order: 3
 ---

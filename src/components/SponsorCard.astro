@@ -8,15 +8,16 @@ import { getSponsorLogo } from '../lib/images';
 
 interface Props {
   entry: CollectionEntry<'sponsors'>;
+  prominent?: boolean;
 }
 
-const { entry } = Astro.props;
+const { entry, prominent = false } = Astro.props;
 const { data } = entry;
 const logo = getSponsorLogo(entry.id);
 const { Content } = await render(entry);
 ---
 
-<GlassPanel as="article" class="sponsor" radius="xl" interactive>
+<GlassPanel as="article" class:list={["sponsor", prominent && "sponsor--prominent"]} radius="xl" interactive>
   {/*
     Logos sit on a light plate rather than directly on the navy field. Several
     of these marks are black or dark grey artwork — rendered straight onto the
@@ -76,6 +77,7 @@ const { Content } = await render(entry);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    height: 100%;
   }
 
   .sponsor__plate {
@@ -83,8 +85,7 @@ const { Content } = await render(entry);
     place-items: center;
     height: 132px;
     padding: var(--space-5);
-    background:
-      linear-gradient(#f2f2ef, #f2f2ef);
+    background: #fff;
     border-block-end: 1px solid rgb(0 10 30 / 0.12);
   }
 
@@ -94,6 +95,9 @@ const { Content } = await render(entry);
     max-height: calc(76px * var(--logo-scale, 1));
     object-fit: contain;
   }
+
+  .sponsor--prominent .sponsor__plate { height: 230px; }
+  .sponsor--prominent .sponsor__logo { max-height: 180px; max-width: 90%; }
 
   .sponsor__fallback {
     font-size: 1.25rem;

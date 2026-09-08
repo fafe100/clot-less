@@ -5,7 +5,7 @@ tier: programme
 url: https://www.seds.ca/
 contribution: Organises the student reduced-gravity challenge
 logoScale: 0.95
-order: 1
+order: 3
 ---
 
 Students for the Exploration and Development of Space – Canada runs the national

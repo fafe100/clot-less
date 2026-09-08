@@ -1,9 +1,8 @@
 ---
 phase: Phase 5
 title: Data analysis and reporting
-status: upcoming
+status: active
 detail: >-
-  Reduction of the pressure and imaging data, computation of T₂₅, T₅₀ and lysis
-  rate constants, and preparation of the manuscript.
+  Post-flight work focuses on reviewing the pressure and imaging data and preparing reports.
 order: 5
 ---

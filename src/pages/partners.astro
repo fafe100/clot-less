@@ -1,11 +1,10 @@
 ---
 import { getCollection } from 'astro:content';
 import PageLayout from '../layouts/PageLayout.astro';
-import SectionHeader from '../components/SectionHeader.astro';
 import SponsorCard from '../components/SponsorCard.astro';
 import GlassPanel from '../components/glass/GlassPanel.astro';
 import Reveal from '../components/Reveal.astro';
-import { sponsorTiers, site } from '../data/site';
+import { site } from '../data/site';
 
 const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order,
@@ -17,35 +16,27 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
   title="Partners and sponsors"
   lede="CLOT-LESS runs on donated hardware, granted funding and flight infrastructure none of us could have built. Here is who provided what."
 >
-  {sponsorTiers.map((tier) => {
-    const group = sponsors.filter((s) => s.data.tier === tier.id);
-    if (group.length === 0) return null;
-    return (
-      <section class="section">
-        <div class="shell">
-          <SectionHeader
-            eyebrow={`${group.length} ${group.length === 1 ? "partner" : "partners"}`}
-            title={tier.label}
-            lede={tier.blurb}
-          />
-          <ul class="grid-auto" role="list" style="--col-min:300px">
-            {group.map((entry, i) => (
-              <Reveal as="li" index={i}>
-                <SponsorCard entry={entry} />
-              </Reveal>
-            ))}
-          </ul>
-        </div>
-      </section>
-    );
-  })}
+  <section class="section section--tight">
+    <div class="shell">
+      <ul class="partners__featured" role="list">
+        {sponsors.slice(0, 2).map((entry, i) => (
+          <Reveal as="li" index={i}><SponsorCard entry={entry} prominent={i === 0} /></Reveal>
+        ))}
+      </ul>
+      <ul class="grid-auto partners__others" role="list" style="--col-min:300px">
+        {sponsors.slice(2).map((entry, i) => (
+          <Reveal as="li" index={i}><SponsorCard entry={entry} /></Reveal>
+        ))}
+      </ul>
+    </div>
+  </section>
 
   <section class="section">
     <div class="shell">
       <Reveal>
         <GlassPanel class="partners__cta" radius="2xl">
           <p class="t-eyebrow">Get involved</p>
-          <h2 class="t-h2 partners__cta-title">Support the campaign</h2>
+          <h2 class="t-h2 partners__cta-title">Support the research</h2>
           <p class="t-lede partners__cta-lede">
             The project is funded through a mix of student grants, in-kind
             hardware donations and the team's own contributions. If your
@@ -60,6 +51,10 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
 </PageLayout>
 
 <style>
+  .partners__featured { display: grid; gap: var(--space-5); margin: 0 0 var(--space-5); padding: 0; list-style: none; }
+  .partners__others { margin: 0; padding: 0; }
+  @media (min-width: 760px) { .partners__featured { grid-template-columns: 1.2fr 1fr; } }
+
   .partners__cta {
     display: flex;
     flex-direction: column;

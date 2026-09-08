@@ -66,28 +66,19 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
           content the visitor can already see. */}
       <div class="enter" style="--enter-delay:540ms">
         <GlassPanel class="sponsor-rail" radius="2xl">
-          <ul role="list">
+          <ul class="sponsor-logos" role="list">
             {sponsors.map((entry) => {
               const logo = getSponsorLogo(entry.id);
               return logo ? (
-                <li>
-                  {/* `widths`, never `densities`. Astro clamps a widths list to
-                      the source's own width but multiplies a densities list
-                      blindly, so [1,2] off a 380px base was emitting 760px
-                      renditions of logos whose originals are 300-450px wide —
-                      upscaled, softer and several times heavier than the file
-                      they came from. No `height` either: the pair 380x170 was a
-                      made-up ratio, and the browser reserved that box until the
-                      image landed and snapped it to the real one. */}
-                  <Image
-                    src={logo}
-                    alt={`${entry.data.name} logo`}
-                    width={190}
-                    widths={[190, 380]}
-                    sizes="(max-width: 879.98px) 110px, 178px"
-                    loading="eager"
-                    decoding="async"
-                  />
+                <li class:list={[
+                  entry.id === 'pure-integrative-pharmacy' && 'sponsor-logos__pure',
+                  entry.id === 'royal-columbian' && 'sponsor-logos__rch',
+                ]}>
+                  <a href={entry.data.url ?? link('/partners')} aria-label={entry.data.name}>
+                    <Image src={logo} alt={`${entry.data.name} logo`}
+                      widths={[190, 380, 600]} sizes={entry.id === 'pure-integrative-pharmacy' ? '350px' : '190px'}
+                      loading="eager" decoding="async" />
+                  </a>
                 </li>
               ) : null;
             })}
@@ -353,41 +344,35 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
     padding: var(--space-6) clamp(var(--space-4), 3vw, var(--space-6));
   }
 
-  /* Sized so all seven marks sit on one row down to ~1000px. The measured
-     widths total ~600px, so a 2rem column gap leaves comfortable slack —
-     including room for another partner or two before it wraps. Still wraps
-     gracefully below that; it is a flex row, not a fixed grid. */
-  .sponsor-rail ul {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-5) var(--space-6);
+  .sponsor-logos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
     margin: 0;
     padding: 0;
     list-style: none;
   }
-
-  /* Logos on the dark field are dark artwork, so they get inverted to a flat
-     light monochrome here rather than sitting on a plate — the partners page
-     shows each one full-colour on its own plate. */
-  /* Sizes track the viewport so the row survives down to tablet widths instead
-     of orphaning the last logo onto a line of its own. Both axes are capped:
-     wide marks (CAN-RGX, SENSIRION) are width-bound, square ones (CSA, Royal
-     Columbian) are height-bound, which keeps them optically even. */
-  .sponsor-rail img {
-    width: auto;
-    max-width: clamp(110px, 12.5vw, 178px);
-    max-height: clamp(38px, 4.2vw, 60px);
-    object-fit: contain;
-    filter: brightness(0) invert(1);
-    opacity: 0.5;
-    transition: opacity var(--dur-fast) var(--ease-out);
+  .sponsor-logos li { min-width: 0; }
+  .sponsor-logos a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 110px;
+    padding: 18px;
+    background: #fff;
+    border-radius: var(--r-sm);
   }
-
-  @media (hover: hover) {
-    .sponsor-rail li:hover img {
-      opacity: 0.92;
-    }
+  .sponsor-logos img { width: auto; height: auto; max-width: 100%; max-height: 74px; object-fit: contain; }
+  .sponsor-logos .sponsor-logos__pure,
+  .sponsor-logos .sponsor-logos__rch { grid-column: 1 / -1; }
+  .sponsor-logos__pure a { height: 230px; }
+  .sponsor-logos__pure img { max-height: 190px; }
+  .sponsor-logos__rch a { height: 160px; }
+  .sponsor-logos__rch img { max-height: 120px; }
+  @media (min-width: 760px) {
+    .sponsor-logos { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .sponsor-logos .sponsor-logos__pure { grid-column: 3 / 5; grid-row: 1; }
+    .sponsor-logos .sponsor-logos__rch { grid-column: 1 / 3; grid-row: 1; align-self: center; }
+    .sponsor-logos__rch a { height: 230px; }
   }
 </style>

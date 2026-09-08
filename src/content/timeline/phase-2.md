@@ -1,10 +1,8 @@
 ---
 phase: Phase 2
 title: Optimization, calibration and testing
-status: upcoming
+status: complete
 detail: >-
-  Sensor calibration, flow-rate verification against the setpoints, thermal
-  characterisation of the 37 °C fluid heating loop, and end-to-end system
-  testing ahead of ground studies.
+  Pre-flight system checks and preparation were completed ahead of the campaign.
 order: 2
 ---

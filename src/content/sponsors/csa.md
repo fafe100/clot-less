@@ -4,7 +4,7 @@ shortName: CSA
 tier: agency
 url: https://www.asc-csa.gc.ca/eng/
 contribution: Backs the campaign, plus two accepted student grants
-order: 3
+order: 4
 ---
 
 The Canadian Space Agency supports the reduced-gravity challenge that puts a

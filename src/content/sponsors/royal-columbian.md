@@ -5,7 +5,7 @@ tier: foundation
 url: https://www.rchfoundation.com/
 contribution: $5,000 toward material costs
 logoScale: 0.95
-order: 8
+order: 1
 ---
 
 The Royal Columbian Hospital Foundation provided $5,000 toward material costs for the CLOT-LESS project.
