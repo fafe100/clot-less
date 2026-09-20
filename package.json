@@ -9,6 +9,7 @@
     "start": "astro dev",
     "build": "astro check && astro build && node scripts/prune-originals.mjs",
     "preview": "astro preview",
+    "favicons": "node scripts/make-favicons.mjs",
     "astro": "astro"
   },
   "dependencies": {

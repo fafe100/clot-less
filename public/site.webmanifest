@@ -1,0 +1,14 @@
+{
+  "name": "Team CLOT-LESS",
+  "short_name": "CLOT-LESS",
+  "icons": [
+    {
+      "src": "favicon-256.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#101820",
+  "background_color": "#101820",
+  "display": "browser"
+}

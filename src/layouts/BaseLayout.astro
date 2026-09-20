@@ -31,7 +31,15 @@ const ogImage = new URL(link('/og-card.jpg'), Astro.site);
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <meta name="theme-color" content="#101820" />
-    <link rel="icon" href={link('/favicon.svg')} type="image/svg+xml" />
+    {/* The favicon is the text-free mission emblem, as a raster. The ICO
+        carries hand-downsampled 16/32/48 frames so tab-sized rendering is not
+        left to the browser's scaler; the 256 PNG covers high-DPI tabs and the
+        manifest; the Apple touch icon is opaque because iOS paints transparent
+        pixels black and applies its own corner mask. */}
+    <link rel="icon" href={link('/favicon.ico')} sizes="16x16 32x32 48x48" />
+    <link rel="icon" href={link('/favicon-256.png')} type="image/png" sizes="256x256" />
+    <link rel="apple-touch-icon" href={link('/apple-touch-icon.png')} />
+    <link rel="manifest" href={link('/site.webmanifest')} />
     {site.googleSiteVerification && (
       <meta name="google-site-verification" content={site.googleSiteVerification} />
     )}
