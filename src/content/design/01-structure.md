@@ -3,7 +3,7 @@ title: Structure and mechanisms
 kicker: Subsystem 01
 summary: >-
   The physical frame that has to hold every component in place through repeated
-  2 g pull-ups and pull-outs, twelve times a day.
+  2 g pull-ups and pull-outs, parabola after parabola.
 hero: ../../assets/design/cad-top-view.png
 heroAlt: >-
   Top-down CAD render of the payload baseplate, showing the perforated aluminium

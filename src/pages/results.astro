@@ -1,0 +1,516 @@
+---
+import { Image } from 'astro:assets';
+import PageLayout from '../layouts/PageLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import StatTile from '../components/StatTile.astro';
+import GlassPanel from '../components/glass/GlassPanel.astro';
+import GlassPill from '../components/glass/GlassPill.astro';
+import Reveal from '../components/Reveal.astro';
+import { flightStats } from '../data/results';
+import { link } from '../lib/link';
+import iacPhoto from '../assets/gallery/iac-2026-presenters.jpg';
+import channelsPhoto from '../assets/gallery/flight-channels-camera.jpg';
+
+const lessons = [
+  {
+    title: 'Fresh clots are stiffer than expected',
+    body: 'The first push into a new clot went past the range of our pressure sensors. By the second infusion the clot had loosened enough to read normally.',
+  },
+  {
+    title: '22 seconds is enough',
+    body: 'The pressure reading settles within a few seconds of the pump starting, leaving most of each parabola as steady, usable signal.',
+  },
+  {
+    title: 'Vomiting is inevitable',
+    body: 'Don’t resist.',
+  },
+];
+
+const nextSteps = [
+  {
+    title: 'Wider-range sensing',
+    body: 'Pressure sensors with a wider range, to capture the first push into fresh clots instead of saturating.',
+  },
+  {
+    title: 'D-dimer sampling',
+    body: 'D-dimer in the effluent as a biochemical marker of fibrin breakdown, alongside the pressure read-out.',
+  },
+  {
+    title: 'Glass slides',
+    body: 'Glass channels for better clot adherence to the walls.',
+  },
+];
+---
+
+<PageLayout
+  eyebrow="Results"
+  title="What the flight showed"
+  lede="Preliminary results from the CAN-RGX 2026 parabolic flight campaign, first presented at the 77th International Astronautical Congress in Antalya, Türkiye."
+>
+  <section class="section section--tight">
+    <div class="shell iac">
+      <Reveal>
+        <figure class="iac__photo">
+          <Image src={iacPhoto}
+            alt="Two CLOT-LESS team members on stage at the 77th International Astronautical Congress, beside the title slide of their talk."
+            widths={[700, 1200, 2000]} sizes="(max-width: 940px) 100vw, 640px" loading="eager" />
+        </figure>
+      </Reveal>
+      <Reveal index={1}>
+        <GlassPanel class="iac__panel" radius="xl">
+          <GlassPill tone="accent">Presented · 6 October 2026</GlassPill>
+          <h2 class="t-h3">77th International Astronautical Congress</h2>
+          <p class="iac__title">
+            Thrombolysis in Microgravity: A Parabolic Flight Feasibility Study
+            <span>Toward Autonomous Medical Care in Deep Space</span>
+          </p>
+          <p class="iac__body">
+            An oral presentation of the platform, the flight and the first look at
+            the data. The paper appears in the congress programme as
+            <em>Thrombolytic Pharmacodynamics in Microgravity: Implications for
+            Autonomous Medical Care in Deep Space</em>.
+          </p>
+          <dl class="iac__facts">
+            <div><dt>Paper</dt><dd class="t-mono">IAC-26,A1,3,9,x113307</dd></div>
+            <div><dt>Session</dt><dd>6 October 2026 · Hall 7</dd></div>
+            <div><dt>Location</dt><dd>Antalya, Türkiye</dd></div>
+          </dl>
+        </GlassPanel>
+      </Reveal>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell">
+      <SectionHeader
+        eyebrow="The flight"
+        title="Two days on the NRC Falcon 20"
+        lede="CLOT-LESS flew out of Ottawa on 1 and 2 September 2026: nine parabolas on the first day and eleven on the second. The first day did not produce usable data, so everything below comes from the second, logged by the payload's own accelerometers and pressure sensors at 20 Hz."
+      />
+      <ul class="grid-auto stats" role="list" style="--col-min:200px">
+        {flightStats.map((s, i) => (
+          <Reveal as="li" index={i}><StatTile {...s} /></Reveal>
+        ))}
+      </ul>
+
+      <div class="protocol">
+        <Reveal class="prose">
+          <h3>How each run worked</h3>
+          <p>
+            The design is <strong>paired</strong>: on every parabola one
+            tenecteplase (TNKase) channel and one saline channel were infused at
+            the same time, through clots made from the same blood. Each clot pair
+            was then infused again on the next two parabolas, to follow how its
+            resistance changed with repeated exposure.
+          </p>
+          <p>
+            Each run started at zero-g onset with a short take-up phase, then
+            infused at 150 µL/min for the rest of the microgravity window, while
+            the pressure drop across the clot, the gravity level and video were
+            recorded throughout. A clot blocking the channel raises the pressure
+            needed to push fluid through it; as it dissolves or erodes, that
+            pressure drop falls.
+          </p>
+          <p>
+            On the second flight day the platform worked as designed: runs
+            started right at zero-g onset and the system logged the whole flight
+            with no data loss.
+          </p>
+        </Reveal>
+        <Reveal index={1}>
+          <figure class="protocol__photo">
+            <Image src={channelsPhoto}
+              alt="Macro camera view of the eight clot channels during flight, each holding a dark red clot."
+              widths={[400, 800]} sizes="(max-width: 880px) 70vw, 340px" loading="lazy" />
+            <figcaption>What the in-flight camera saw: eight channels, four perfused with tenecteplase and four with saline.</figcaption>
+          </figure>
+        </Reveal>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell">
+      <SectionHeader
+        eyebrow="Main result"
+        title="What we saw"
+        lede="With every repeat infusion, the clots treated with tenecteplase became noticeably easier to push fluid through, potentially signalling that they were breaking down. The matching saline controls barely changed, although due to our limited number of samples, statistical significance cannot be established."
+      />
+
+      <ul class="headline" role="list">
+        <Reveal as="li">
+          <GlassPanel class="headline__tile headline__tile--tnk" radius="lg">
+            <p class="headline__label">TNKase channels</p>
+            <p class="headline__value">Clearly loosened</p>
+            <p class="headline__detail">In all three clot pairs, resistance to flow fell with each infusion of the drug.</p>
+          </GlassPanel>
+        </Reveal>
+        <Reveal as="li" index={1}>
+          <GlassPanel class="headline__tile headline__tile--sal" radius="lg">
+            <p class="headline__label">Saline controls</p>
+            <p class="headline__value">Barely changed</p>
+            <p class="headline__detail">The same clots perfused with saline stayed close to where they started.</p>
+          </GlassPanel>
+        </Reveal>
+      </ul>
+
+      <Reveal class="prose finding">
+        <p>
+          The difference held in the same direction in every pair, even after
+          correcting for small offsets in the sensors' baselines. That is the
+          pattern you would expect if a clot-dissolving drug keeps working in
+          microgravity.
+        </p>
+      </Reveal>
+
+      <Reveal>
+        <GlassPanel class="caveat" radius="lg">
+          <GlassPill>Preliminary</GlassPill>
+          <p>
+            We cannot yet tell how much of the change is the drug dissolving the
+            clot versus fluid physically wearing it away. Full results will follow
+            in a peer-reviewed paper.
+          </p>
+        </GlassPanel>
+      </Reveal>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell">
+      <SectionHeader eyebrow="Lessons" title="What the flight taught us" />
+      <ol class="grid-auto cards" role="list" style="--col-min:260px">
+        {lessons.map((l, i) => (
+          <Reveal as="li" index={i}>
+            <GlassPanel class="card" radius="lg">
+              <span class="card__n t-num">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="card__title">{l.title}</h3>
+              <p class="card__body">{l.body}</p>
+            </GlassPanel>
+          </Reveal>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell">
+      <SectionHeader eyebrow="Conclusions" title="Where this leaves us" />
+      <div class="concl">
+        <Reveal>
+          <GlassPanel class="concl__panel" radius="xl">
+            <dl class="concl__list">
+              <div>
+                <dt>Platform</dt>
+                <dd>An automated, paired pressure-drop platform measured thrombolysis on every parabola.</dd>
+              </div>
+              <div>
+                <dt>Pharmacology</dt>
+                <dd>Clot resistance fell noticeably over repeat TNKase infusions and only slightly with saline, in all three pairs.</dd>
+              </div>
+              <div>
+                <dt>Limitations</dt>
+                <dd>Only three clot pairs, and the clots were not size-matched. We cannot yet separate enzymatic lysis from mechanical erosion, and the 1 g comparison is limited to one run.</dd>
+              </div>
+            </dl>
+          </GlassPanel>
+        </Reveal>
+        <Reveal index={1}>
+          <h3 class="t-h3 concl__next">Next steps</h3>
+          <ol class="steps" role="list">
+            {nextSteps.map((s, i) => (
+              <li>
+                <span class="card__n t-num">{String(i + 1).padStart(2, '0')}</span>
+                <div>
+                  <strong>{s.title}</strong>
+                  <p>{s.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <p class="concl__beyond">
+            <strong>Beyond thrombolysis:</strong> the same platform can test other
+            hematologic questions in microgravity — anticoagulants, platelets and
+            hemostatic agents.
+          </p>
+        </Reveal>
+      </div>
+      <p class="more">
+        <a href={link('/design')}>How the platform was built →</a>
+        <a href={link('/gallery')}>Photos from the flight and the congress →</a>
+      </p>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .iac {
+    display: grid;
+    gap: var(--space-6);
+    align-items: center;
+  }
+
+  @media (min-width: 940px) {
+    .iac { grid-template-columns: 1.1fr 1fr; gap: var(--space-8); }
+  }
+
+  .iac__photo {
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--r-lg);
+  }
+
+  .iac__photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .iac__panel {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: var(--space-4);
+    padding: var(--space-6) var(--space-6) calc(var(--space-6) + 4px);
+  }
+
+  .iac__title {
+    font-size: var(--t-lede);
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.012em;
+    color: var(--text-primary);
+  }
+
+  .iac__title span {
+    display: block;
+    margin-block-start: var(--space-1);
+    font-size: var(--t-small);
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  .iac__body {
+    font-size: var(--t-small);
+    line-height: 1.65;
+  }
+
+  .iac__body em { color: var(--text-primary); }
+
+  .iac__facts {
+    width: 100%;
+    margin: 0;
+    padding-block-start: var(--space-3);
+    border-block-start: 1px solid var(--border-hairline);
+  }
+
+  .iac__facts div {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-block: var(--space-3);
+    border-block-end: 1px solid var(--border-hairline);
+  }
+
+  .iac__facts div:last-child { border-block-end: none; padding-block-end: 0; }
+  .iac__facts dt { font-size: var(--t-caption); color: var(--text-tertiary); }
+  .iac__facts dd {
+    margin: 0;
+    font-size: var(--t-caption);
+    font-weight: 600;
+    text-align: end;
+    color: var(--text-primary);
+  }
+
+  .stats { margin: 0; padding: 0; list-style: none; }
+
+  .protocol {
+    display: grid;
+    gap: var(--space-6);
+    align-items: start;
+    margin-block-start: var(--space-8);
+  }
+
+  @media (min-width: 880px) {
+    .protocol { grid-template-columns: 1fr 340px; gap: var(--space-10); }
+  }
+
+  .protocol .prose h3 {
+    font-size: var(--t-h3);
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .protocol__photo { margin: 0; max-width: 340px; }
+  .protocol__photo img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--r-lg);
+  }
+  .protocol__photo figcaption {
+    margin-block-start: var(--space-3);
+    font-size: var(--t-caption);
+    line-height: 1.55;
+    color: var(--text-tertiary);
+  }
+
+  .headline {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-5);
+    margin: 0 0 var(--space-5);
+    padding: 0;
+    list-style: none;
+  }
+
+  .headline__tile {
+    padding: var(--space-5) var(--space-5) calc(var(--space-5) + 4px);
+    border-inline-start: 3px solid var(--c, transparent);
+  }
+
+  .headline__tile--tnk { --c: #dc5a52; }
+  .headline__tile--sal { --c: #3f8ee0; }
+
+  .headline__label {
+    font-size: var(--t-small);
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .finding { margin-block-start: var(--space-2); }
+
+  .headline__value {
+    margin-block: var(--space-2) var(--space-2);
+    font-size: clamp(1.5rem, 1.25rem + 0.8vw, 1.875rem);
+    font-weight: 700;
+    letter-spacing: -0.028em;
+    line-height: 1.05;
+    color: var(--text-primary);
+  }
+
+  .headline__detail {
+    font-size: var(--t-small);
+    line-height: 1.55;
+    color: var(--text-tertiary);
+  }
+
+  .caveat {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    gap: var(--space-3);
+    margin-block-start: var(--space-5);
+    padding: var(--space-5) var(--space-5) calc(var(--space-5) + 4px);
+  }
+
+  .caveat p {
+    max-width: 75ch;
+    font-size: var(--t-small);
+    line-height: 1.65;
+  }
+
+  .caveat strong { color: var(--text-primary); }
+
+  .cards { margin: 0; padding: 0; list-style: none; }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    height: 100%;
+    padding: var(--space-5) var(--space-5) calc(var(--space-5) + 4px);
+  }
+
+  .card__n {
+    font-size: var(--t-small);
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .card__title {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+  }
+
+  .card__body {
+    font-size: var(--t-small);
+    line-height: 1.6;
+    color: var(--text-tertiary);
+  }
+
+  .concl {
+    display: grid;
+    gap: var(--space-8);
+    align-items: start;
+  }
+
+  @media (min-width: 940px) {
+    .concl { grid-template-columns: 1.15fr 1fr; gap: var(--space-10); }
+  }
+
+  .concl__panel { padding: var(--space-6) var(--space-6) calc(var(--space-6) + 4px); }
+
+  .concl__list { margin: 0; display: flex; flex-direction: column; gap: var(--space-5); }
+  .concl__list dt {
+    font-size: var(--t-eyebrow);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .concl__list dd {
+    margin: var(--space-2) 0 0;
+    font-size: var(--t-small);
+    line-height: 1.65;
+    color: var(--text-secondary);
+  }
+
+  .concl__next { margin-block-end: var(--space-4); }
+
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .steps li {
+    display: grid;
+    grid-template-columns: 2rem 1fr;
+    gap: var(--space-3);
+    padding-block-end: var(--space-4);
+    border-block-end: 1px solid var(--border-hairline);
+  }
+
+  .steps strong { font-size: var(--t-small); color: var(--text-primary); }
+  .steps p {
+    margin-block-start: 2px;
+    font-size: var(--t-caption);
+    line-height: 1.55;
+    color: var(--text-tertiary);
+  }
+
+  .concl__beyond {
+    margin-block-start: var(--space-4);
+    font-size: var(--t-small);
+    line-height: 1.65;
+  }
+
+  .concl__beyond strong { color: var(--text-primary); }
+
+  .more {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-6);
+    margin-block-start: var(--space-8);
+    font-size: var(--t-small);
+    font-weight: 600;
+  }
+
+  .more a { text-decoration: none; }
+</style>

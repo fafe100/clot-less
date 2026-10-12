@@ -13,7 +13,7 @@ export const site = {
   institution: 'University of British Columbia',
   tagline: 'A platform for hematologic research in zero gravity.',
   description:
-    'Team CLOT-LESS is developing an experimental platform for thrombolysis and other hematologic research in zero gravity through the CAN-RGX parabolic flight campaign.',
+    'Team CLOT-LESS built and flew an experimental platform for thrombolysis and other hematologic research in zero gravity on the CAN-RGX parabolic flight campaign, and presented its first results at the 77th International Astronautical Congress.',
   contacts,
   // Primary contact — the "Get in touch" call to action. Derived rather than
   // repeated, so the two can never drift apart.
@@ -27,6 +27,7 @@ export const site = {
 export const nav = [
   { href: '/', label: 'Home' },
   { href: '/about', label: 'About' },
+  { href: '/results', label: 'Results' },
   { href: '/team', label: 'Team' },
   { href: '/design', label: 'Project Design' },
   { href: '/partners', label: 'Partners' },
@@ -39,8 +40,8 @@ export const nav = [
  * included) so they render identically to the design page's stats.
  */
 export const homeStats = [
-  { value: '12', label: 'Parabolas', detail: 'Across two flight days' },
-  { value: '20 s', label: 'Microgravity window', detail: 'Per parabola' },
+  { value: '20', label: 'Parabolas', detail: 'Across two flight days' },
+  { value: '22 s', label: 'Microgravity window', detail: 'Per parabola, measured' },
   { value: '8', label: 'Microfluidic channels', detail: '4 drug, 4 saline control' },
   { value: '13.3 kg', label: 'Payload mass', detail: '70.5% margin' },
 ] as const;

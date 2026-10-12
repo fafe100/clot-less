@@ -16,4 +16,4 @@ Brings a professional engineering background to a medical question. Owns the
 engineering of the payload: the microfluidic channel design, the structural
 integrity of the rack under repeated hypergravity loading, and the integration of
 the differential pressure sensors that produce the experiment's primary data.
-Responsible for making the instrument reliable enough to survive twelve parabolas.
+Responsible for making the instrument reliable enough to survive twenty parabolas.

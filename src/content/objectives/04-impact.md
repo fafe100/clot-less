@@ -9,7 +9,7 @@ icon: outreach
 order: 4
 metrics:
   - label: Conference abstract
-    value: Accepted — IAC 77
+    value: Presented — IAC 77
   - label: Manuscript
     value: ≥1 in preparation
   - label: STEM modules
@@ -18,9 +18,9 @@ metrics:
     value: 6–8 classroom visits
 ---
 
-An abstract has been accepted to the 77th International Astronautical Congress in
-Türkiye, covering the experimental design and the case for the research. Results
-will follow in future papers once flight data has been compiled.
+CLOT-LESS was presented at the 77th International Astronautical Congress in
+Antalya, Türkiye, on 6 October 2026, covering the platform, the flight and the
+first, preliminary results. Full results will follow in a peer-reviewed paper.
 
 Three age-appropriate STEM modules are in development for elementary and high school
 audiences, aimed at both the science and at showing students that space research is

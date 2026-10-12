@@ -13,7 +13,7 @@ metrics:
   - label: Detection threshold
     value: ≥10% ΔP in 20 s
   - label: Sampling rate
-    value: ≥50 Hz
+    value: 20 Hz
   - label: Absolute accuracy
     value: ≤ ±0.03 psi
 ---

@@ -19,7 +19,7 @@ specs:
     value: ±100 mbar (±1.45 psi)
     note: Total error band ≤ ±2% FSS
   - label: Sampling
-    value: ≥50 Hz continuous
+    value: 20 Hz continuous
     note: End-to-end latency under 0.2 s
   - label: Valve control
     value: 8 × GPIO → relay module
@@ -34,14 +34,13 @@ more into dedicated pump relays that close a dry contact across each pump's
 foot-switch input — a deliberately dumb, hard-to-misfire interface.
 
 Both differential pressure sensors sit on the I²C bus and are sampled continuously at
-50 Hz or better. Every reading is timestamped and logged locally.
+20 Hz. Every reading is timestamped and logged locally.
 
 **During a parabola:** about two seconds before microgravity onset the operator
 presses Button A. That single command opens the pinch valve for the assigned channel
 and starts the corresponding pump at its setpoint. Fluid flows through the clot for
 the whole microgravity window and into the pull-out; a second press stops the pump
-and re-energises the valve, isolating the channel. Parabolas 1–6 run on Button A;
-7–12 run on Button B against the second set of channels.
+and re-energises the valve, isolating the channel.
 
 If something goes wrong there is a three-level response — reset the affected
 component in software, skip the channel for the rest of the flight, or pause all

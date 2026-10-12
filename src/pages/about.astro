@@ -7,6 +7,7 @@ import TimelineRail from '../components/TimelineRail.astro';
 import GlassPanel from '../components/glass/GlassPanel.astro';
 import GlassPill from '../components/glass/GlassPill.astro';
 import Reveal from '../components/Reveal.astro';
+import { link } from '../lib/link';
 
 const objectives = (await getCollection('objectives')).sort((a, b) => a.data.order - b.data.order);
 const timeline = (await getCollection('timeline')).sort((a, b) => a.data.order - b.data.order);
@@ -15,7 +16,7 @@ const timeline = (await getCollection('timeline')).sort((a, b) => a.data.order -
 <PageLayout
   eyebrow="Mission"
   title="Why thrombosis, why microgravity"
-  lede="CLOT-LESS investigated clot dissolution in reduced gravity during the CAN-RGX flight campaign."
+  lede="CLOT-LESS investigated clot dissolution in reduced gravity during the CAN-RGX flight campaign, and presented its first results at the 77th International Astronautical Congress."
 >
   <section class="section section--tight">
     <div class="shell about__grid">
@@ -49,7 +50,9 @@ const timeline = (await getCollection('timeline')).sort((a, b) => a.data.order -
           clot-dissolving drug in microgravity, does it work the way it does on
           Earth? CLOT-LESS was designed to investigate this question.
           The team has now completed the CAN-RGX flight campaign, bringing the
-          experimental platform from the bench into reduced gravity.
+          experimental platform from the bench into reduced gravity, and
+          presented the first results at the International Astronautical
+          Congress. <a href={link('/results')}>See what the flight showed →</a>
         </p>
       </Reveal>
 
@@ -68,7 +71,8 @@ const timeline = (await getCollection('timeline')).sort((a, b) => a.data.order -
             <div><dt>Agent</dt><dd>Tenecteplase (TNKase)</dd></div>
             <div><dt>Model</dt><dd>Porcine blood clots, in vitro</dd></div>
             <div><dt>Biosafety</dt><dd>Level 1 / Risk Group 1</dd></div>
-            <div><dt>Flight days</dt><dd>Two</dd></div>
+            <div><dt>Aircraft</dt><dd>NRC Falcon 20</dd></div>
+            <div><dt>Flight days</dt><dd>1–2 September 2026</dd></div>
           </dl>
         </GlassPanel>
       </Reveal>
@@ -93,7 +97,7 @@ const timeline = (await getCollection('timeline')).sort((a, b) => a.data.order -
       <SectionHeader
         eyebrow="Programme"
         title="Where the project stands"
-        lede="The flight campaign is complete. Post-flight work focuses on reviewing the data and sharing the findings."
+        lede="The flight campaign is complete and the first results have been presented. Analysis continues toward a full paper."
       />
       <TimelineRail entries={timeline} />
     </div>
@@ -110,18 +114,19 @@ const timeline = (await getCollection('timeline')).sort((a, b) => a.data.order -
       <div class="about__outreach">
         <Reveal>
           <GlassPanel class="about__panel" radius="xl">
-            <GlassPill tone="accent">Accepted</GlassPill>
+            <GlassPill tone="accent">Presented</GlassPill>
             <h3 class="t-h3">77th International Astronautical Congress</h3>
             <p class="about__panel-body">
               <em>Thrombolytic Pharmacodynamics in Microgravity: Implications for
               Autonomous Medical Care in Deep Space</em> — an oral presentation of
-              the experimental design and the case for the research. Results will
-              follow in future papers after analysis of the flight data.
+              the platform, the flight and the first, preliminary results. Full
+              results will follow in a peer-reviewed paper.
             </p>
+            <a class="about__link" href={link('/results')}>See the results →</a>
             <dl class="about__paper">
               <div><dt>Paper</dt><dd class="t-mono">IAC-26,A1,3,9,x113307</dd></div>
               <div><dt>Session</dt><dd>6 October 2026, 16:20 · Hall 7</dd></div>
-              <div><dt>Location</dt><dd>Türkiye</dd></div>
+              <div><dt>Location</dt><dd>Antalya, Türkiye</dd></div>
             </dl>
           </GlassPanel>
         </Reveal>
@@ -255,6 +260,12 @@ const timeline = (await getCollection('timeline')).sort((a, b) => a.data.order -
   .about__panel-body {
     font-size: var(--t-small);
     line-height: 1.65;
+  }
+
+  .about__link {
+    font-size: var(--t-small);
+    font-weight: 600;
+    text-decoration: none;
   }
 
   .about__panel-body em {

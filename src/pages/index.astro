@@ -13,6 +13,7 @@ import { link } from '../lib/link';
 import { getSponsorLogo } from '../lib/images';
 import { Image } from 'astro:assets';
 import CabinPhoto from '../components/CabinPhoto.astro';
+import iacPhoto from '../assets/gallery/iac-2026-podium.jpg';
 
 const objectives = (await getCollection('objectives')).sort((a, b) => a.data.order - b.data.order);
 const team = (await getCollection('team'))
@@ -41,13 +42,14 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
         </h1>
 
         <p class="t-lede hero__lede enter" style="--enter-delay:380ms">
-          Team CLOT-LESS is developing an experimental platform to study
-          thrombolysis and other hematologic research questions in zero gravity.
+          Team CLOT-LESS built and flew an experimental platform to study
+          thrombolysis and other hematologic research questions in zero gravity,
+          and presented the first results at IAC 2026.
         </p>
 
         <div class="hero__actions enter" style="--enter-delay:460ms">
-          <a class="btn btn--primary" href={link('/design')}>Explore the design</a>
-          <a class="btn btn--ghost" href={link('/about')}>Our mission</a>
+          <a class="btn btn--primary" href={link('/results')}>See the results</a>
+          <a class="btn btn--ghost" href={link('/design')}>Explore the design</a>
         </div>
       </div>
     </div>
@@ -88,6 +90,32 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
       <p class="section__more center">
         <a href={link('/partners')}>What each partner contributed →</a>
       </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell latest">
+      <Reveal>
+        <figure class="latest__photo">
+          <Image src={iacPhoto}
+            alt="A CLOT-LESS team member presenting at the IAC 2026 podium in Antalya."
+            widths={[500, 900, 1400]} sizes="(max-width: 880px) 90vw, 460px" loading="lazy" />
+        </figure>
+      </Reveal>
+      <Reveal index={1} class="latest__copy">
+        <SectionHeader
+          eyebrow="Latest · October 2026"
+          title="Presented at the International Astronautical Congress"
+          lede="Team CLOT-LESS presented its parabolic flight results at the 77th IAC in Antalya, Türkiye — the first look at how a clot-dissolving drug behaves in microgravity."
+        />
+        <p class="latest__finding">
+          With each repeat infusion, clots treated with tenecteplase became
+          easier to push fluid through, potentially signalling that they were
+          breaking down, while the saline controls barely changed.
+        </p>
+        <p class="latest__note">Preliminary — with our limited number of samples, statistical significance cannot be established.</p>
+        <p class="section__more"><a href={link('/results')}>What the flight showed →</a></p>
+      </Reveal>
     </div>
   </section>
 
@@ -150,6 +178,20 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
 </BaseLayout>
 
 <style>
+  .latest { display: grid; gap: var(--space-8); align-items: center; }
+  @media (min-width: 880px) { .latest { grid-template-columns: minmax(0, 460px) 1fr; } }
+  .latest__photo { margin: 0; overflow: hidden; border-radius: var(--r-lg); aspect-ratio: 4 / 5; }
+  .latest__photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 60% 30%; }
+  .latest__copy :global(.sec-head) { margin-block-end: var(--space-5); }
+  .latest__finding {
+    max-width: 58ch;
+    padding-block-start: var(--space-5);
+    border-block-start: 1px solid var(--border-hairline);
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .latest__note { margin-block-start: var(--space-4); font-size: var(--t-caption); color: var(--text-tertiary); }
+
   .campaign { display: grid; gap: var(--space-8); align-items: center; }
   @media (min-width: 880px) { .campaign { grid-template-columns: 1.15fr 1fr; } }
 

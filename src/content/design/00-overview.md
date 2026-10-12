@@ -18,9 +18,9 @@ stats:
   - value: 8
     label: Microfluidic channels
     detail: 4 drug, 4 saline control
-  - value: 50 Hz
+  - value: 20 Hz
     label: Pressure sampling
-    detail: Minimum acquisition rate
+    detail: Logged continuously in flight
 ---
 
 Everything lives inside a Pelican 0350 case. A Raspberry Pi 5 runs the experiment;

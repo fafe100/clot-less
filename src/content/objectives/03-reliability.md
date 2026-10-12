@@ -9,7 +9,7 @@ icon: reliability
 order: 3
 metrics:
   - label: Parabolas
-    value: 12 across two flight days
+    value: 20 across two flight days
   - label: Coefficient of variation
     value: ≤5% on control loops
   - label: Data loss
@@ -20,7 +20,7 @@ metrics:
 
 Each parabola subjects the payload to roughly 2 g on the pull-up, then near-zero g,
 then 2 g again on the pull-out. Pumps, valves, sensors and the logging chain all
-have to behave identically on the twelfth repetition as on the first.
+have to behave identically on the last repetition as on the first.
 
 Reproducibility of the control channels is the test: if signals from the saline
 loops drift across parabolas, any difference measured in the drug channels cannot be
