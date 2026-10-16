@@ -13,7 +13,7 @@ import { link } from '../lib/link';
 import { getSponsorLogo } from '../lib/images';
 import { Image } from 'astro:assets';
 import CabinPhoto from '../components/CabinPhoto.astro';
-import iacPhoto from '../assets/gallery/iac-2026-podium.jpg';
+import iacPhoto from '../assets/gallery/iac-2026-presenters.jpg';
 
 const objectives = (await getCollection('objectives')).sort((a, b) => a.data.order - b.data.order);
 const team = (await getCollection('team'))
@@ -98,8 +98,8 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
       <Reveal>
         <figure class="latest__photo">
           <Image src={iacPhoto}
-            alt="A CLOT-LESS team member presenting at the IAC 2026 podium in Antalya."
-            widths={[500, 900, 1400]} sizes="(max-width: 880px) 90vw, 460px" loading="lazy" />
+            alt="Two CLOT-LESS team members on stage at the 77th International Astronautical Congress in Antalya, beside the title slide of their talk."
+            widths={[600, 1000, 1600, 2000]} sizes="(max-width: 880px) 90vw, 620px" loading="lazy" />
         </figure>
       </Reveal>
       <Reveal index={1} class="latest__copy">
@@ -196,9 +196,9 @@ const sponsors = (await getCollection('sponsors', ({ data }) => !data.draft)).so
 
 <style>
   .latest { display: grid; gap: var(--space-8); align-items: center; }
-  @media (min-width: 880px) { .latest { grid-template-columns: minmax(0, 460px) 1fr; } }
-  .latest__photo { margin: 0; overflow: hidden; border-radius: var(--r-lg); aspect-ratio: 4 / 5; }
-  .latest__photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 60% 30%; }
+  @media (min-width: 880px) { .latest { grid-template-columns: 1.15fr 1fr; } }
+  .latest__photo { margin: 0; overflow: hidden; border-radius: var(--r-lg); aspect-ratio: 4 / 3; }
+  .latest__photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
   .latest__copy :global(.sec-head) { margin-block-end: var(--space-5); }
   .latest__finding {
     max-width: 58ch;
