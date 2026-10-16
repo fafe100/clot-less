@@ -81,9 +81,12 @@ export function initLightbox(): void {
     if (e.key === 'ArrowLeft') { e.preventDefault(); show(index - 1); }
   });
 
-  // Click the backdrop (outside the figure) to dismiss.
+  // Click the empty space around the photo to dismiss. The dialog fills the
+  // viewport, so that space is the dialog and its layout wrappers, not the
+  // ::backdrop.
   dialog.addEventListener('click', (e) => {
-    if (e.target === dialog) dialog.close();
+    const t = e.target as HTMLElement;
+    if (t === dialog || t.matches('.lb__inner, .lb__figure')) dialog.close();
   });
 
   // Return focus to the thumbnail that opened it.

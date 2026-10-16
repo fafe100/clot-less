@@ -44,19 +44,29 @@
 </dialog>
 
 <style>
+  /* Full-viewport dialog. The global reset (`* { margin: 0 }`) strips the
+     browser's `margin: auto` centring from modal dialogs, which left the old
+     fixed-width box pinned to the top-left with its controls hanging off it.
+     Filling the viewport and centring with grid makes the layout independent of
+     that default, and lets the controls sit at the screen edges where they
+     never overlap or crop the photo. */
   .lb {
-    width: min(96vw, 1240px);
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
     max-width: none;
-    max-height: 94svh;
+    max-height: none;
+    margin: 0;
     padding: 0;
     border: none;
     background: transparent;
-    overflow: visible;
+    overflow: hidden;
     color: var(--text-secondary);
   }
 
   .lb::backdrop {
-    background-color: rgb(0 10 30 / 0.72);
+    background-color: rgb(0 10 30 / 0.86);
     -webkit-backdrop-filter: blur(var(--blur-xl)) saturate(140%);
     backdrop-filter: blur(var(--blur-xl)) saturate(140%);
   }
@@ -66,23 +76,41 @@
   }
 
   .lb__inner {
+    --ctl: 44px;
+    --edge: clamp(12px, 2vw, 24px);
+    /* Room the arrows need on each side, so the photo never runs under them. */
+    --side: calc(var(--ctl) + var(--edge) * 2);
     position: relative;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    padding: calc(var(--ctl) + var(--edge) * 2) var(--side) var(--edge);
   }
 
   .lb__figure {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-4);
+    justify-content: center;
+    gap: var(--space-3);
+    width: 100%;
+    height: 100%;
+    min-height: 0;
     margin: 0;
   }
 
+  /* As large as the screen allows, never upscaled past the file's own size,
+     always whole: the image shrinks to fit the space left after the caption. */
   .lb__img {
+    flex: 0 1 auto;
+    min-height: 0;
     max-width: 100%;
-    max-height: 76svh;
+    max-height: 100%;
     width: auto;
     height: auto;
-    border-radius: var(--r-lg);
+    object-fit: contain;
+    border-radius: var(--r-md);
     box-shadow: var(--shadow-3);
     transition: opacity var(--dur-fast) var(--ease-out);
   }
@@ -92,10 +120,16 @@
     opacity: 0.4;
   }
 
-  /* The caption sits outside the image, not over it. */
+  /* The caption sits under the image, not over it. */
   .lb__meta {
+    flex: 0 0 auto;
+    max-width: min(100%, 68ch);
     padding: var(--space-3) var(--space-5);
     text-align: center;
+  }
+
+  .lb__meta:has(.lb__caption:empty) {
+    display: none;
   }
 
   .lb__caption {
@@ -105,11 +139,12 @@
   }
 
   .lb__ctl {
-    position: absolute;
+    position: fixed;
+    z-index: 1;
     display: grid;
     place-items: center;
-    width: 44px;
-    height: 44px;
+    width: var(--ctl);
+    height: var(--ctl);
     border-radius: 50%;
     color: var(--text-primary);
     background-color: rgb(16 27 71 / 0.82);
@@ -127,14 +162,16 @@
     transform: scale(0.94);
   }
 
-  .lb__ctl--prev { inset-inline-start: -8px; inset-block-start: 34%; }
-  .lb__ctl--next { inset-inline-end: -8px; inset-block-start: 34%; }
-  .lb__ctl--close { inset-inline-end: -8px; inset-block-start: -14px; }
+  .lb__ctl--prev,
+  .lb__ctl--next { inset-block-start: calc(50% - var(--ctl) / 2); }
+  .lb__ctl--prev { inset-inline-start: var(--edge); }
+  .lb__ctl--next { inset-inline-end: var(--edge); }
+  .lb__ctl--close { inset-block-start: var(--edge); inset-inline-end: var(--edge); }
 
   .lb__counter {
-    position: absolute;
-    inset-block-start: -14px;
-    inset-inline-start: 0;
+    position: fixed;
+    inset-block-start: calc(var(--edge) + 8px);
+    inset-inline-start: var(--edge);
     padding: 0.3rem 0.7rem;
     font-size: var(--t-caption);
     font-weight: 600;
@@ -143,11 +180,16 @@
     background-color: rgb(16 27 71 / 0.82);
   }
 
+  /* Phones: the photo takes the full width; the arrows move down beside the
+     caption instead of covering the picture. */
   @media (max-width: 699.98px) {
-    .lb__ctl--prev { inset-inline-start: 4px; }
-    .lb__ctl--next { inset-inline-end: 4px; }
-    .lb__ctl--close { inset-block-start: -50px; inset-inline-end: 4px; }
-    .lb__counter { inset-block-start: -46px; inset-inline-start: 4px; }
+    .lb__inner {
+      --side: var(--edge);
+      padding-block-end: calc(var(--ctl) + var(--edge) * 2);
+    }
+
+    .lb__ctl--prev,
+    .lb__ctl--next { inset-block-start: auto; inset-block-end: var(--edge); }
   }
 
   /* glass.css covers everything carrying a .glass class, but ::backdrop is a
